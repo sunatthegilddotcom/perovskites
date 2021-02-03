@@ -1,2 +1,2 @@
 # Add files here which are to be tracked by Git LFS
-data/.*zip
+data/*.zip
