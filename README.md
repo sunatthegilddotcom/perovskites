@@ -8,7 +8,7 @@ Develop a package that can extract hidden information from spatial heterogeneiti
 3. Using an autoencoder to extract spatial PL features from images to be fed into a linear regression model for Ld75 prediction.
 
 ### Instructions:
-Check the `notebooks/visualization_PL_image.ipynb` notebook.
+Check the [notebooks/visualize_PL_data.ipynb](notebooks/visualize_PL_data.ipynb) notebook.
 
 ### References
 1. Early-time widefield absolute PL intensities and carrier diffusion length measurements can be used to predict the lifetime of perovskite thin films. But, this paper uses the mean pixel intensities of PL images, negleting the spatial heterogeneities [Stoddard et. al., ACS Energy Lett. 2020, 5, 3, 946–954](https://pubs.acs.org/doi/10.1021/acsenergylett.0c00164)
