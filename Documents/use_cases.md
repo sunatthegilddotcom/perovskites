@@ -1,7 +1,7 @@
 Use Cases:
  1. Loading image
-	a) Define standard image dimensions
-	b) Define standard resolution (dpi)
-	c) Convert if not standard
-	d) 
+	* Define standard image dimensions
+	* Define standard resolution (dpi)
+	* Convert if not standard
+	* 
  2. 
