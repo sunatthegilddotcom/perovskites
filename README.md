@@ -20,7 +20,12 @@ Develop a python package that can extract hidden information from spatial hetero
 * Extract information for the PL images correlated to manufacturing processes
 
 ### Instructions:
-Check the [notebooks/visualize_PL_data.ipynb](notebooks/visualize_PL_data.ipynb) notebook.
+* Check the [notebooks/visualize_PL_data.ipynb](notebooks/visualize_PL_data.ipynb) notebook.
+* To use the data, first install [Git Large-File-Storage (LFS)](https://git-lfs.github.com). When you pull the repo and find that the `data/example.zip` is only of 1kB, try these two commands after `git pull origin main`- 
+```
+git lfs fetch
+git lfs checkout
+```
 
 ### References
 1. Early-time widefield absolute PL intensities and carrier diffusion length measurements can be used to predict the lifetime of perovskite thin films. But, this paper uses the mean pixel intensities of PL images, negleting the spatial heterogeneities [Stoddard et. al., ACS Energy Lett. 2020, 5, 3, 946–954](https://pubs.acs.org/doi/10.1021/acsenergylett.0c00164)
