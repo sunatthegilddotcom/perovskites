@@ -15,8 +15,9 @@ Develop a python package that can extract hidden information from spatial hetero
 * Check for correlation between PL and diffusion length in perovskites
 
 *Secondary:*
-* Through correlating features to film lifetime, determine how to manufacture and optimally stable thin-film
+* Through correlating features to film lifetime, determine how to manufacture an optimally stable thin-film
 * Extract spatial PL features from images to be fed into a linear regression model for Ld75 prediction
+* Extract information for the PL images correlated to manufacturing processes
 
 ### Instructions:
 * Check the [notebooks/visualize_PL_data.ipynb](notebooks/visualize_PL_data.ipynb) notebook.
@@ -25,6 +26,8 @@ Develop a python package that can extract hidden information from spatial hetero
 git lfs fetch
 git lfs checkout
 ```
+
+* Currently, the plan is to use a shared Google Drive to store all data and use it in the model. Also, we must make sure that the data is openly available to everyone once the repo is made public.
 
 ### References
 1. Early-time widefield absolute PL intensities and carrier diffusion length measurements can be used to predict the lifetime of perovskite thin films. But, this paper uses the mean pixel intensities of PL images, negleting the spatial heterogeneities [Stoddard et. al., ACS Energy Lett. 2020, 5, 3, 946–954](https://pubs.acs.org/doi/10.1021/acsenergylett.0c00164)
