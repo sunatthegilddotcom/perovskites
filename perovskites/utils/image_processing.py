@@ -9,12 +9,15 @@ acquisition softwares like ImageJ, micromanager etc.
 
 """
 # imports
+import numpy as np
+import os
+
 from skimage.util import img_as_ubyte
 from skimage.filters import rank
 from skimage.morphology import disk
 from scipy.signal import correlate2d, find_peaks
-import numpy as np
-import os
+from skimage.transform import resize
+
 
 ###############################################################################
 # THIS PIECE OF CODE MUST BE REMOVED WHILE MAKING A PACKAGE.
@@ -89,18 +92,24 @@ def normalize(im_arr, pix_range=(0,1), axis=None, minmax=None):
     pix_range : tuple (optional)
         range for the normalized array values
     axis : int or None
-        axis to be used for normalization, if None, then all elements normalized uniformly
+        axis to be used for normalization, if None, then all elements
+        normalized uniformly
     minmax : tuple or other iterable or None
-        min and max values to be used for normalizing (must be in order : min, then max)
+        min and max values to be used for normalizing
+        (must be in order : min, then max)
         
     Returns
     -----------
     Normalized array
     """
     if minmax is None:
-        return min(pix_range) + ((im_arr-np.min(im_arr, axis=axis))/(np.max(im_arr, axis=axis)-np.min(im_arr, axis=axis)))*(max(pix_range) - min(pix_range))
-    else:
-        return min(pix_range) + ((im_arr-minmax[0])/(minmax[1] - minmax[0]))*(max(pix_range) - min(pix_range))
+        minmax = [np.min(im_arr, axis=axis), np.max(im_arr, axis=axis)]
+        
+    norm_val = (im_arr-minmax[0])/(minmax[1] - minmax[0])
+    norm_val *= max(pix_range) - min(pix_range)
+    norm_val += min(pix_range)
+    
+    return norm_val
 
 
 def channel_corners(img, blur_kernel=5, threshold=0.2, get_square=True):
@@ -124,10 +133,10 @@ def channel_corners(img, blur_kernel=5, threshold=0.2, get_square=True):
         
     threshold : float (default=0.2)
         An empirical value that decides how good the extracted channel is.
-        Higher the threshold, a channel is more likely to be extracted, but sometimes
-        it would extract a channel from images with no channel too. Lower the threshold,
-        the image must show strict channel boundary to extract channel and blurry
-        channel boundaries are not well recognized.
+        Higher the threshold, a channel is more likely to be extracted, but
+        sometimes it would extract a channel from images with no channel too.
+        Lower the threshold, the image must show strict channel boundary to
+        extract channel and blurry channel boundaries are not well recognized.
         
     get_square : bool (default=True)
         If True, extracts a square-shaped cropped portion of the extract channel,
@@ -143,7 +152,8 @@ def channel_corners(img, blur_kernel=5, threshold=0.2, get_square=True):
     """
     #The blurring kernel
     #img_arr = opening(closing(img, disk(blur_kernel)), disk(blur_kernel))
-    img_arr = rank.median(img_as_ubyte(normalize(img)), selem=disk(blur_kernel))
+    img_arr = rank.median(img_as_ubyte(normalize(img)),
+                          selem=disk(blur_kernel))
     
     #The derivative kernel
     kernel1 = np.array([[-1,-1,-1],[0,0,0],[1,1,1]])
@@ -161,7 +171,8 @@ def channel_corners(img, blur_kernel=5, threshold=0.2, get_square=True):
     pad_offset = int(kernel1.shape[0]/2)*nderiv
     
     #Finding the corners on the left edge
-    peaks, props = find_peaks(left_edge, distance=img_arr.shape[0]/10, prominence=(None,1))
+    peaks, props = find_peaks(left_edge, distance=img_arr.shape[0]/10,
+                              prominence=(None,1))
     peaks = peaks[np.argsort(props['prominences'])[-2:]]
     lt = [min(peaks), 0]
     lb = [max(peaks), 0]
@@ -182,7 +193,8 @@ def channel_corners(img, blur_kernel=5, threshold=0.2, get_square=True):
         return np.array([lt, rt, lb, rb])
     
     #Finding the corners on the right edge
-    peaks, props = find_peaks(right_edge, distance=img_arr.shape[0]/10, prominence=(None,1))
+    peaks, props = find_peaks(right_edge, distance=img_arr.shape[0]/10,
+                              prominence=(None,1))
     peaks = peaks[np.argsort(props['prominences'])[-2:]]
     rt = [min(peaks), img_arr.shape[1]-1]
     rb = [max(peaks), img_arr.shape[1]-1]
@@ -231,8 +243,8 @@ def crop_image(img_arr, new_corner_indices):
         A 2D image array
     
     new_corner_indices : seq.
-        Any sequence (list/tuple/array) with four integers indicating the indices
-        for (left-top, right-top, left-bottom, right-bottom)
+        Any sequence (list/tuple/array) with four integers indicating the
+        indices for (left-top, right-top, left-bottom, right-bottom)
         
     Returns
     --------------------
@@ -241,6 +253,8 @@ def crop_image(img_arr, new_corner_indices):
         
     
     """
+    new_corner_indices = np.array(new_corner_indices)
+
     top_row = max(new_corner_indices[0,0], new_corner_indices[1,0])
     bottom_row = min(new_corner_indices[2,0], new_corner_indices[3,0])
     left_edge = max(new_corner_indices[0,1], new_corner_indices[2,1])
@@ -273,8 +287,136 @@ def get_channel(img, get_square=True):
     return normalize(crop_image(img, points)), points
 
 
+def resize_based_on_FOV(img, fov, target_img_um=50,
+                        final_img_pix=32,
+                        extract_channel=True):
+    """
+    Crops the square-shaped img based on the microscope's field of view (fov)
+    in um into the target physical size of target_img_um (in um.) and resizes
+    it to the target_img_pix size (in pixels.). So the image obtained will have
+    pixel size of final_img_pix and a physical size of target_img_um in um.
+
+    Parameters
+    ----------
+    img : numpy.ndarray
+        The 2D square-shaped image array.
+    fov : float
+        The physical dimension of the field of view of the microscope's
+        camera in um.
+    target_img_um : int, optional
+        The target image physical size in um. The default is 50.
+    final_img_pix : TYPE, optional
+        The final size into which the image will be resized.
+        The default is 32.
+    extract_channel : bool, optional
+        Whether to extract the channel from the image
+
+    Raises
+    --------
+    ValueError
+        When the target_img_um is greater than FOV or if its equivalent value
+        in pixels is larger than the image size.
+    
+    Returns
+    -------
+    img_arr : numpy.ndarray
+        The 2D image aray.
+    new_corner_indices : numpy.ndarray
+        List of the (row, col) indices used in cropping in the order-
+        left-top, right-top, left-bottom, right-bottom
+
+    """
+    img_arr = img.copy()
+    pix_per_um = img_arr.shape[0]/fov
+    if target_img_um > fov:
+        raise ValueError("The target image's physical dimension in um must be\
+                         smaller than field of view in um, i.e.,"+str(fov) )
+    
+    # Find the equivalent target size in pix before finaly resizing
+    target_im_pix_raw = pix_per_um * target_img_um
+    if img_arr.shape[0]<target_im_pix_raw:
+        raise ValueError("The target_im_um is larger than the physical size\
+                         of image in um.")
+    # extract the channel
+    if extract_channel:
+        img_arr, _ = get_channel(img_arr, get_square=True)
+        if img_arr.shape[0]<target_im_pix_raw:
+            raise ValueError("The target_im_um is larger than the physical\
+                             size of image in um, after extracting channel.")
+    
+    # go to the center of the channel, and crop uniformly
+    # until the srt default physical size is obtained.
+    c_row, c_col = (np.array(img_arr.shape)/2).astype(int)
+    dh, dw = (0.5*target_im_pix_raw*np.ones(2)).astype(int)
+    new_corner_indices = np.array([[c_row-dh, c_col-dw],
+                                  [c_row-dh, c_col+dw],
+                                  [c_row+dh, c_col-dw],
+                                  [c_row+dh, c_col+dw]])
+    
+    img_arr = crop_image(img_arr, new_corner_indices)
+    
+    # Finally resize image to target size
+    img_arr = resize(img_arr, (final_img_pix, final_img_pix),
+                     anti_aliasing=True)
+    
+    return img_arr, new_corner_indices
 
 
+def img_as_feed(img_path, fov, img_arr=None, time=0,
+                target_img_um=50, final_img_pix=32,
+                extract_channel=True,
+                return_corner_inds=False):
+    """
+    Reads the image stack from the path or from img_arr, picks just the frame corresponding to
+    the time point specified, and returns image array ready to be fed to a
+    CNN.
 
-
-
+    Parameters
+    ----------
+    img_path : str
+        The path to the image stack.
+    fov : float
+        The field of view of the microscope used.
+    img_arr : numpy.ndarray, optional
+        The image array to be fed. It is optional and if passed, the image_path
+        is ignored irrespective of its value. If the img_path is unknown,
+        set it to None. The default is None.
+    time : int, optional
+        The time cooresponding to the time frame of the image stack,
+        to be used (>=0 and <50). The default is 0.
+    target_img_um : int, optional
+        The target physical size of the image. The default is 50.
+    final_img_pix : int, optional
+        The final image size in pixels. The default is 32.
+    extract_channel : bool, optional
+        Whether to extract the channel in the image. The default is True.
+    return_corner_inds : bool, optional
+        Whether to return the (row, col) indices used in cropping in the order-
+        left-top, right-top, left-bottom, right-bottom
+        The default is False.
+        
+    Returns
+    -------
+    feed_img = numpy.ndarray
+        A 2D image array with the size of final_img_pix with pixel values in
+        range [0, 255].
+    new_corner_indices : numpy.ndarray
+        The array of (row, col) indices used in cropping in the order-
+        left-top; right-top; left-bottom; right-bottom.
+    """
+    
+    if img_path is not None:
+        img = read_image(img_path)[:, :, 0]
+    elif img_arr is not None:
+        img = img_arr.copy()
+    else:
+        raise Exception('One among img_path and img_arr must not be None.')
+    
+    img, new_corner_indices = resize_based_on_FOV(img, fov, target_img_um=50,
+                                final_img_pix=32,
+                                extract_channel=True)
+    
+    if return_corner_inds:
+        return img_as_ubyte(img), new_corner_indices
+    else:
+        return img_as_ubyte(img)
