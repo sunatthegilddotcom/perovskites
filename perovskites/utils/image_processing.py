@@ -416,6 +416,9 @@ def img_as_feed(img_path, fov, img_arr=None, time=0,
                                 final_img_pix=32,
                                 extract_channel=True)
     
+    # ALso the image channel dimension must be explicitly mentioned for
+    # feeding into the tf.keras NN models
+    img = img.reshape((*img.shape, 1))
     if return_corner_inds:
         return img_as_ubyte(img), new_corner_indices
     else:

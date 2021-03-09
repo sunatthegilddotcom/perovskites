@@ -1,0 +1,6 @@
+{
+    "target_image_size_um": 50,
+    "target_image_size_px": 32,
+    "y_col": "log(Ld80)",
+    "FOV_col": "FOV"
+}
