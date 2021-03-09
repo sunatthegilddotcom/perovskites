@@ -40,7 +40,7 @@ class PLDataSequence(Sequence):
         batch_y = self.data_df.loc[batch_x, self.y_col].values
         
         return np.stack([
-            impr.img_as_feed(x_path, fov=self.meta_df.loc[x_path, self.fov_col], time=0,
+            impr.img_as_feed(x_path, fov=self.meta_df.loc[x_path, (self.fov_col, self.fov_col)], time=0,
                              target_img_um=self.target_img_um,
                              final_img_px=self.final_img_px,) for x_path in batch_x
         ], axis=0), batch_y
