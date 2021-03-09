@@ -1,12 +1,12 @@
 import os
+import sys
 import unittest
 
 import pandas as pd
 
-import codebase
+import utils
 
-
-data_path = os.path.join(codebase.__path__[0], 'data')
+data_path = os.path.join(utils.__path__[0], 'data')
 
 
 class test_Perceptron(unittest.TestCase):
@@ -20,5 +20,5 @@ class test_Perceptron(unittest.TestCase):
         dataset = df.values.tolist()
 
         for row in dataset:
-            prediction = codebase.predict(row, weights)
+            prediction = utils.codebase.predict(row, weights)
             self.assertAlmostEqual(row[-1], prediction)
