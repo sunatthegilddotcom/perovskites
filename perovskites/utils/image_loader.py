@@ -9,11 +9,8 @@ from tensorflow.python.keras.utils.data_utils import Sequence
 
 # Append the current folder to sys path
 curr_dir = os.path.dirname(__file__)
-print(curr_dir)
 parent_dir = os.path.dirname(curr_dir)
-print(parent_dir)
 settings_path = os.path.join(parent_dir, 'settings.json')
-print(settings_path)
 with open(settings_path, 'r') as file:
     MODEL_INFO = json.load(file)
 
@@ -21,13 +18,13 @@ sys.path.append(curr_dir)
 import image_processing as impr
 
 class PLDataSequence(Sequence):
-    def __init__(self, x_paths_list, batch_size,
+    def __init__(self, batch_size,
                  data_df, meta_df,
                  y_col=MODEL_INFO['y_col'], fov_col=MODEL_INFO['FOV_col'],
                  target_img_um=MODEL_INFO['target_image_size_um'],
                  final_img_px=MODEL_INFO['target_image_size_px'],
                  ):
-        self.x, self.data_df = x_paths_list, data_df
+        self.x, self.data_df = meta_df.index.values, data_df
         self.meta_df = meta_df
         self.batch_size = batch_size
         self.y_col = y_col
