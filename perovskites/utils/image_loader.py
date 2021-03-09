@@ -67,12 +67,12 @@ def get_image_data(meta_df, data_df,
     image_list = []
     y_list = []
     for idx in tqdm(meta_df.index):
-        fov = meta_df.loc[idx, (fov_col, fov_col)].values[0]
+        fov = meta_df.loc[idx, (fov_col, fov_col)]
         image_list.append(load_image_from_path(idx, fov=fov,
                             target_img_um=target_img_um,
                             final_img_pix=final_img_pix,
                             time_frame=time_frame))
-        y_list.append(data_df.loc[idx, y_col].values[0])
+        y_list.append(data_df.loc[idx, y_col])
     
     return np.array(image_list), np.array(y_list)
 
