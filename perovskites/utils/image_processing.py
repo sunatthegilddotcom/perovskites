@@ -362,7 +362,7 @@ def resize_based_on_FOV(img, fov, target_img_um=50,
     return img_arr, new_corner_indices
 
 
-def img_as_feed(img_path, fov, img_arr=None, time=0,
+def img_as_feed(img_path, fov, img_arr=None, time_frame=0,
                 target_img_um=50, final_img_pix=32,
                 extract_channel=True,
                 return_corner_inds=False):
@@ -381,7 +381,7 @@ def img_as_feed(img_path, fov, img_arr=None, time=0,
         The image array to be fed. It is optional and if passed, the image_path
         is ignored irrespective of its value. If the img_path is unknown,
         set it to None. The default is None.
-    time : int, optional
+    time_frame : int, optional
         The time cooresponding to the time frame of the image stack,
         to be used (>=0 and <50). The default is 0.
     target_img_um : int, optional
@@ -406,15 +406,16 @@ def img_as_feed(img_path, fov, img_arr=None, time=0,
     """
     
     if img_path is not None:
-        img = read_image(img_path)[:, :, 0]
+        img = read_image(img_path)[:, :, time_frame]
     elif img_arr is not None:
         img = img_arr.copy()
     else:
         raise Exception('One among img_path and img_arr must not be None.')
     
-    img, new_corner_indices = resize_based_on_FOV(img, fov, target_img_um=50,
-                                final_img_pix=32,
-                                extract_channel=True)
+    img, new_corner_indices = resize_based_on_FOV(img, fov,
+                                target_img_um=target_img_um,
+                                final_img_pix=final_img_pix,
+                                extract_channel=extract_channel)
     
     # ALso the image channel dimension must be explicitly mentioned for
     # feeding into the tf.keras NN models
