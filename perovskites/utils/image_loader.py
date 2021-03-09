@@ -4,8 +4,9 @@ import os
 import json
 import numpy as np
 import pandas as pd
-from tensorflow.python.keras.utils.data_utils import Sequence
 
+from tqdm import tqdm
+from tensorflow.python.keras.utils.data_utils import Sequence
 
 # Append the current folder to sys path
 curr_dir = os.path.dirname(__file__)
@@ -13,9 +14,9 @@ parent_dir = os.path.dirname(curr_dir)
 settings_path = os.path.join(parent_dir, 'settings.json')
 with open(settings_path, 'r') as file:
     MODEL_INFO = json.load(file)
-
 sys.path.append(curr_dir)
 import image_processing as impr
+
 
 class PLDataSequence(Sequence):
     def __init__(self, batch_size,
@@ -44,5 +45,35 @@ class PLDataSequence(Sequence):
                              target_img_um=self.target_img_um,
                              final_img_pix=self.final_img_pix,) for x_path in batch_x
         ], axis=0), batch_y
+
+
+def load_image_from_path(path, fov,
+                    target_img_um=MODEL_INFO['target_image_size_um'],
+                    final_img_pix=MODEL_INFO['target_image_size_pix'],
+                    time_frame=0):
+    
+    return impr.img_as_feed(path, fov=fov, time=time_frame,
+                             target_img_um=target_img_um,
+                             final_img_pix=final_img_pix,)
+
+
+def get_image_data(meta_df, data_df,
+                   target_img_um=MODEL_INFO['target_image_size_um'],
+                   final_img_pix=MODEL_INFO['target_image_size_pix'],
+                   y_col=MODEL_INFO['y_col'],
+                   fov_col=MODEL_INFO['FOV_col'],
+                   time_frame=0):
+    
+    image_list = []
+    y_list = []
+    for idx in tqdm(meta_df.index):
+        fov = meta_df.loc[idx, (fov_col, fov_col)].values[0]
+        image_list.append(load_image_from_path(idx, fov=fov,
+                            target_img_um=target_img_um,
+                            final_img_pix=final_img_pix,
+                            time_frame=time_frame))
+        y_list.append(data_df.loc[idx, y_col].values[0])
+    
+    return np.array(image_list), np.array(y_list)
 
 
