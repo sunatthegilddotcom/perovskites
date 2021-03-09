@@ -4,16 +4,18 @@ import os
 import json
 import numpy as np
 import pandas as pd
-import image_processing as impr
 from tensorflow.python.keras.utils.data_utils import Sequence
 
 
 # Append the current folder to sys path
-curr_dir = os.path.dirname(os.path.dirname(os.path.abspath(__name__)))
-settings_path = os.path.join(curr_dir, 'settings.json')
+curr_dir = os.path.dirname(os.path.abspath(__name__))
+parent_dir = os.path.dirname(curr_dir)
+settings_path = os.path.join(parent_dir, 'settings.json')
 with open(settings_path, 'r') as file:
     MODEL_INFO = json.load(file)
 
+sys.path.append(curr_dir)
+import image_processing as impr
 
 class PLDataSequence(Sequence):
     def __init__(self, x_paths_list, batch_size,
