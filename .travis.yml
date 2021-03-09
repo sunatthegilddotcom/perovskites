@@ -31,7 +31,7 @@ install:
 
 # a list of commands to run before the main script
 before_script:
-    - flake8 utils
+    - flake8 perovskites
 
 # the actual commands to run
 script:
