@@ -9,8 +9,11 @@ from tensorflow.python.keras.utils.data_utils import Sequence
 
 # Append the current folder to sys path
 curr_dir = os.path.dirname(os.path.abspath(__name__))
+print(curr_dir)
 parent_dir = os.path.dirname(curr_dir)
+print(par_dir)
 settings_path = os.path.join(parent_dir, 'settings.json')
+print(settings_path)
 with open(settings_path, 'r') as file:
     MODEL_INFO = json.load(file)
 
