@@ -22,7 +22,7 @@ class PLDataSequence(Sequence):
                  data_df, meta_df,
                  y_col=MODEL_INFO['y_col'], fov_col=MODEL_INFO['FOV_col'],
                  target_img_um=MODEL_INFO['target_image_size_um'],
-                 final_img_px=MODEL_INFO['target_image_size_px'],
+                 final_img_pix=MODEL_INFO['target_image_size_pix'],
                  ):
         self.x, self.data_df = meta_df.index.values, data_df
         self.meta_df = meta_df
@@ -30,7 +30,7 @@ class PLDataSequence(Sequence):
         self.y_col = y_col
         self.fov_col = fov_col
         self.target_img_um = target_img_um
-        self.final_img_px = final_img_px
+        self.final_img_pix = final_img_pix
 
     def __len__(self):
         return int(np.ceil(len(self.x) / float(self.batch_size)))
@@ -42,7 +42,7 @@ class PLDataSequence(Sequence):
         return np.stack([
             impr.img_as_feed(x_path, fov=self.meta_df.loc[x_path, (self.fov_col, self.fov_col)], time=0,
                              target_img_um=self.target_img_um,
-                             final_img_px=self.final_img_px,) for x_path in batch_x
+                             final_img_pix=self.final_img_pix,) for x_path in batch_x
         ], axis=0), batch_y
 
 
