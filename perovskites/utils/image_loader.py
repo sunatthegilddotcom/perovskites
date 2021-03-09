@@ -74,14 +74,14 @@ def get_image_data(meta_df, data_df,
     
     image_list = []
     y_list = []
-    print("Loading data from {} paths ...".format(len(meta_df)))
     for idx in tqdm(meta_df.index):
         
         # Load the image
         try:
-            fov = meta_df.loc[idx, (fov_col, fov_col)]
-        except:
             fov = meta_df.loc[idx, (fov_col, fov_col)].values[0]
+        except:
+            fov = meta_df.loc[idx, (fov_col, fov_col)]
+            
         image_list.append(load_image_from_path(idx, fov=fov,
                             target_img_um=target_img_um,
                             final_img_pix=final_img_pix,
@@ -90,9 +90,10 @@ def get_image_data(meta_df, data_df,
         
         # Now get the y_value based on y_col string
         try:
-            y_val = data_df.loc[idx, y_col]
-        except:
             y_val = data_df.loc[idx, y_col].values[0]
+        except:
+            y_val = data_df.loc[idx, y_col]
+            
         y_list.append(y_val)
     
     return np.array(image_list), np.array(y_list)
