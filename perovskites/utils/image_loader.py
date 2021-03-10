@@ -27,15 +27,15 @@ from miscellaneous import booleanize
 MODEL_INFO = booleanize(MODEL_INFO)
 SHARED_DRIVE_PATH = MODEL_INFO['data_info']['shared_drive_path']
 DATA_PICKLE_PATH = MODEL_INFO['data_info']['pickle_filename']
-META_DF_PATH = MODEL_INFO['data_info']['features_meta_filtered.csv']
-DATA_DF_PATH = MODEL_INFO['data_info']['features_intact_filtered.csv']
+META_DF_PATH = MODEL_INFO['data_info']['meta_df_filename']
+DATA_DF_PATH = MODEL_INFO['data_info']['data_df_filename']
 
 DATA_PICKLE_PATH = SHARED_DRIVE_PATH + '/' + DATA_PICKLE_PATH
 META_DF_PATH = SHARED_DRIVE_PATH + '/' + META_DF_PATH
 DATA_DF_PATH = SHARED_DRIVE_PATH + '/' + DATA_DF_PATH
 if not (os.path.exists(DATA_PICKLE_PATH) or os.path.exists(SHARED_DRIVE_PATH)):
     print("YOU DO NOT HAVE ACCESS TO THE DATASETS. PLEASE CONTACT THE REPO\
-          CONTRIBUTORS AT THE EMAILS PROVIDED IN THE README FOR ACCESS.")
+          \nCONTRIBUTORS AT THE EMAILS PROVIDED IN THE README FOR ACCESS.")
 
 #%%
 class PLDataLoader:
