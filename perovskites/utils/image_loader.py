@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from miscellaneous import booleanize
-import image_processing as impr
 import sys
 import os
 import json
@@ -21,6 +19,8 @@ with open(settings_path, 'r') as file:
     MODEL_INFO = json.loads(file.read())
 
 sys.path.append(curr_dir)
+import image_processing as impr
+from miscellaneous import booleanize
 
 # Convert the boolean strings (if any) in the settings dictionary to boolean
 # type values
