@@ -3,8 +3,8 @@ import sys
 import unittest
 
 import pandas as pd
-
-import utils
+print(os.path)
+import .utils
 
 data_path = os.path.join(utils.__path__[0], 'data')
 
