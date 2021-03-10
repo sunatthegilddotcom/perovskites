@@ -16,7 +16,7 @@ curr_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(curr_dir)
 settings_path = os.path.join(parent_dir, 'settings.json')
 with open(settings_path, 'r') as file:
-    MODEL_INFO = json.loads(file.read())
+    MODEL_INFO = json.load(file)
 
 sys.path.append(curr_dir)
 import image_processing as impr
@@ -37,7 +37,7 @@ if not (os.path.exists(DATA_PICKLE_PATH) or os.path.exists(SHARED_DRIVE_PATH)):
     print("YOU DO NOT HAVE ACCESS TO THE DATASETS. PLEASE CONTACT THE REPO\
           CONTRIBUTORS AT THE EMAILS PROVIDED IN THE README FOR ACCESS.")
 
-
+#%%
 class PLDataLoader:
     """
     This class loads the data from the "Perovskites_DIRECT" shared data folder.
