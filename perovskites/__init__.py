@@ -1,4 +1,4 @@
 from .version import __version__
-from .codebase import predict
+from perovskites.utils.codebase import predict
 
-__all__ = [__version__, utils]
+__all__ = [__version__, predict]
