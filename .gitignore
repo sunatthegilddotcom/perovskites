@@ -1,3 +1,6 @@
+# The data pickle file
+perovskites/data/PL_data.pickle
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

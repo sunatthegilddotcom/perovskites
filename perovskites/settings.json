@@ -1,7 +1,7 @@
 {
     "target_image_size_um": 50,
     "target_image_size_pix": 32,
-    "y_col": "log(Ld80)",
+    "y_col": "(Ld, 0.8)",
     "FOV_col": "camera_FOV",
     "extract_channel": "true"
 }
