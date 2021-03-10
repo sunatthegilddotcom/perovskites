@@ -1,4 +1,4 @@
 from .version import __version__
-import utils
+from .codebase import predict
 
 __all__ = [__version__, utils]
