@@ -3,7 +3,7 @@ import sys
 import unittest
 
 import pandas as pd
-from .utils import codebase
+from perovskites.utils import codebase
 
 curr_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(curr_dir)
