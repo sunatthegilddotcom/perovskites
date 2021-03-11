@@ -1,5 +1,6 @@
 ## Decoding spatial heterogeneities in Photoluminiscence images in Perovskite Thin films
-
+[![Coverage Status](https://coveralls.io/repos/github/afarley9/perovskites/badge.svg?branch=anne_branch)](https://coveralls.io/github/afarley9/perovskites?branch=anne_branch)
+[![Build Status](https://travis-ci.com/afarley9/perovskites.svg?branch=anne_branch)](https://travis-ci.com/afarley9/perovskites)
 ### Overview:
 Develop a python package that can extract hidden information from spatial heterogeneities observed in PL images of perovskite thin films and quantify it to generate features for use in lifetime prediction models. Currently, PL image processing is primarily implemented in biological fields; we seek to restructure this technology for use in the material characterization of perovskite photovoltaics. This will provide a more robust picture of features which lead to degradation than current state of the art perovskite characterization. 
 
