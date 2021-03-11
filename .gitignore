@@ -1,5 +1,7 @@
 # The data pickle file
 perovskites/data/PL_data.pickle
+perovskites/data/features_intact_filtered.csv
+perovskites/data/features_meta_filtered.csv
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

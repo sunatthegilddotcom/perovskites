@@ -17,12 +17,9 @@ from skimage.filters import rank
 from skimage.morphology import disk
 from scipy.signal import correlate2d, find_peaks
 from skimage.transform import resize
-
-
 ###############################################################################
 # THIS PIECE OF CODE MUST BE REMOVED WHILE MAKING A PACKAGE.
 # THE NEED OF TIFFFILE CAN BE INCLUDED IN THE ENV. DEPENDENCIES
-
 try:
     import tifffile as tf
 except ImportError:
@@ -414,10 +411,11 @@ def img_as_feed(img_path, fov, img_arr=None, time_frame=0,
     else:
         raise Exception('One among img_path and img_arr must not be None.')
 
-    img, new_corner_indices = resize_based_on_FOV(img, fov,
-                                                  target_img_um=target_img_um,
-                                                  final_img_pix=final_img_pix,
-                                                  extract_channel=extract_channel)
+    img, new_corner_indices =\
+        resize_based_on_FOV(img, fov,
+                            target_img_um=target_img_um,
+                            final_img_pix=final_img_pix,
+                            extract_channel=extract_channel)
 
     # ALso the image channel dimension must be explicitly mentioned for
     # feeding into the tf.keras NN models
