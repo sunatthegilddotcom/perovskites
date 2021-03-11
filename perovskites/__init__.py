@@ -1,6 +1,4 @@
-import os
+from .version import __version__
+from .utils.codebase import predict
 
-PEROVSKITES_FOLDER = os.dirname(__file__)
-DATA_FOLDER = os.path.join(PEROVSKITES_FOLDER, 'data')
-UTILS_FOLDER = os.path.join(PEROVSKITES_FOLDER, 'utils')
-SETTINGS_FILES = os.path.join(PEROVSKITES_FOLDER, 'settings.json')
+__all__ = [__version__, predict]
