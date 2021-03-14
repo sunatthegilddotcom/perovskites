@@ -14,8 +14,7 @@ Use Cases:
 	* Import/parse json file
 	* User input physical size of channel
 
- 4. Loading csv data (Ld, time...)
-	* 
+ 4. Training Autoencoder
 
  5. Neural Network 
 	* Define layers
@@ -31,7 +30,7 @@ Use Cases:
 	* Feed for regression model is neural network array and csv data
 	
  8. Final ouput
-	* Ld75 Time
+	* Predicted Ld75 time
 
 Component Specifications:
 
@@ -51,7 +50,14 @@ Component Specifications:
 3. Loading csv data
 	* Using the "extract_raw_data" and "get_raw_data" functions in plva.py
 	
-5. Neural Network
-	* This is built using Keras with a number of layers???
+4. Autoencoder
+	* Dimensionally reduces the image size (from 32x32 to 8x8) using a convolution neural network
+	* This is 
 
-	
+5. K-means/PCA
+	* These further dimensionally reducts our image to find the most important groupings.
+
+6. Multi Linear regression
+	* After K-means/PCA has been completed, we send the results through a multi-linear regression moel
+	* The features for this model include X, Y, Z... Need to add in later when we know
+	* We predict Ld75 using this model 
