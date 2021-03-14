@@ -4,11 +4,17 @@
     "y_col": "(Ld, 0.8)",
     "FOV_col": "camera_FOV",
     "extract_channel": "true",
+    "shared_drive_path": "/content/drive/Shareddrives/Perovskites_DIRECT",
     "data_info": {
-        "shared_drive_path": "/content/drive/Shareddrives/Perovskites_DIRECT",
         "local_data_folder": "data",
         "pickle_filename": "PL_data.pickle",
         "data_df_filename": "features_intact_filtered.csv",
         "meta_df_filename": "features_meta_filtered.csv"
+    },
+    "saved_model_info": {
+    	"models_folder_path": "saved_models",
+    	"history_csv_name": "fit_history.csv",
+		"model_json_name": "model.json",
+		"model_h5_name": "model.h5"
     }
 }

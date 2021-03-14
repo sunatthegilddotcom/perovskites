@@ -33,14 +33,16 @@ from miscellaneous import booleanize
 MODEL_INFO = booleanize(MODEL_INFO)
 
 # Load the filenames of all the data files
-DATA_FOLDER_PATH = MODEL_INFO['data_info']['shared_drive_path']
+DATA_FOLDER_PATH = MODEL_INFO['shared_drive_path']
 DATA_PICKLE_PATH = MODEL_INFO['data_info']['pickle_filename']
 META_DF_PATH = MODEL_INFO['data_info']['meta_df_filename']
 DATA_DF_PATH = MODEL_INFO['data_info']['data_df_filename']
 
 # Check in the local folder if the module is not run in COlab
 if not os.path.exists(DATA_FOLDER_PATH):
-    DATA_FOLDER_PATH = MODEL_INFO['data_info']['local_data_folder']
+    data_folder = MODEL_INFO['data_info']['local_data_folder']
+    DATA_FOLDER_PATH = os.path.join(parent_dir, data_folder)
+                                    
 DATA_PICKLE_PATH = os.path.join(DATA_FOLDER_PATH, DATA_PICKLE_PATH)
 META_DF_PATH = os.path.join(DATA_FOLDER_PATH, META_DF_PATH)
 DATA_DF_PATH = os.path.join(DATA_FOLDER_PATH, DATA_DF_PATH)
@@ -53,8 +55,9 @@ if not (is_pickle_present or is_df_present):
           \nCONTRIBUTORS AT THE EMAILS PROVIDED IN THE README FOR ACCESS.")
 
 ##########################################################
-########## THE MAIN DATA LOADER CLASS ###################
+# ######### THE MAIN DATA LOADER CLASS ###################
 ##########################################################
+
 
 class PLDataLoader:
     """
