@@ -1,6 +1,8 @@
 {
     "target_image_size_um": 50,
     "target_image_size_pix": 32,
+    "number_of_clusters": 10
+    "reduced_pca_dims": 10
     "y_col": "(Ld, 0.8)",
     "FOV_col": "camera_FOV",
     "extract_channel": "true",
