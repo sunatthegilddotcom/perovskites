@@ -361,7 +361,7 @@ class CNNPredictor:
 
         # TThis just allows to print code with variable colunmn length
         # based on the size of training set.
-        _print_fit_table(len(y), epochs, batch_size)
+        _print_fit_table(len(y), self.epochs, self.batch_size, self.feed_shape)
         print("\n")
 
         history = self.model.fit(x=X, y=y, epochs=epochs,
