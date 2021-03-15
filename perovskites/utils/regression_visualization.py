@@ -7,6 +7,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+import cv2
 
 # DEFAULT MIN-MAX VALUES for ENVIRONMENTAL CONDITIONS
 NSUNS_RANGE = np.array([1, 32])
@@ -14,7 +15,7 @@ REL_HUM_RANGE = np.array([0, 60])
 TEMP_RANGE = np.array([25, 85])
 MA_RANGE = np.array([0, 1])
 STYLE_VARIABLES = ['T', 'RH', 'soakSuns', 'MA', 'O2', 'N2']
-                 
+
 # default font
 default_font = {'color': 'k',
                 'fontsize': 14,
@@ -130,36 +131,6 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     labels += [description2]
 
 
-def error_evolution_plot(ax, error_list, x_list,
-                         xlabel, ylabel):
-    """
-    Makes a simple scatter plot for any error.
-
-    Parameters
-    ----------
-    ax : Matplotlib Axes object()
-        The Matplotlib Axes object.
-    error_list : seq
-        The list of errors.
-    x_list : seq
-        The list of x values corresponding to errors.
-    xlabel : str
-        The name of x variables.
-    ylabel : str
-        The name of error.
-
-    Returns
-    -------
-    None.
-
-    """
-    ax.scatter(x_list, error_list, s=8)
-    ax.scatter(x_list, error_list, s=4, c='w')
-    ax.plot(x_list, error_list, linewidth=1.5)
-    ax.set_ylabel(ylabel, **default_font)
-    ax.set_xlabel(xlabel, **default_font)
-
-
 def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
     """
     Makes the coefficient bar chart for the a linear regression model.
@@ -212,9 +183,6 @@ def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
     return handle
 
 
-
-
-
 def train_validation_error(ax, history_csv, loss_metric):
     """
     Plots the training and validation error plots vs the epoch count
@@ -245,7 +213,7 @@ def train_validation_error(ax, history_csv, loss_metric):
     ax.legend(fontsize=int(default_font['fontsize']*0.8))
 
 
-def default_style_legend(save_path=None, dpi=100, font=default_font):
+def default_style_legend(ax=None, save_path=None, dpi=100, font=default_font):
     """
     Saves a figure to define the color coding in scatter parity plots. This
     figure can be used as a legend to describe color coding. This generates
@@ -268,7 +236,7 @@ def default_style_legend(save_path=None, dpi=100, font=default_font):
     """
 
     fig = plt.figure(figsize=(5, 5), dpi=dpi)
-    ax = fig.add_axes([0, 0, 1, 1])
+    ax_edit = fig.add_axes([0, 0, 1, 1])
 
     # creating dummy data
     x = 4 + np.arange(4)
@@ -287,22 +255,23 @@ def default_style_legend(save_path=None, dpi=100, font=default_font):
                              MA=np.ones(len(X_val.flatten())))
 
     for i in range(len(X.flatten())):
-        ax.scatter(X.flatten()[i], Y.flatten()[i], **(dict_list[i]))
+        ax_edit.scatter(X.flatten()[i], Y.flatten()[i], **(dict_list[i]))
 
     xlabels = ['0%', '20%', '40%', '60%']
     ylabels = ['1 Sun', '8 Suns', '16 Suns', '32 Suns']
     for i in range(len(xlabels)):
-        ax.text(s=xlabels[i], x=x[i], y=y[-1]+0.35, **font, ha='center')
+        ax_edit.text(s=xlabels[i], x=x[i], y=y[-1]+0.35, **font, ha='center')
     for i in range(len(ylabels)):
-        ax.text(s=ylabels[i], x=x[0]-1.45, y=y[::-1][i], **font, va='center')
+        ax_edit.text(s=ylabels[i], x=x[0]-1.45, y=y[::-1][i],
+                     **font, va='center')
 
-    ax.text(s="Relative Humidity", x=0.5*(x[0]+x[1]), y=y[-1]+1, **font)
-    ax.text(s="Sun Intensity", y=y[1], x=x[0]-1.87,
-            rotation=90, **font, ha='center')
-    ax.arrow(x[0], y[-1]+0.80, 3, 0, head_width=0.1, head_length=0.1,
-             fc='k', ec='k')
-    ax.arrow(x[0]-1.6, y[-1], 0, -3, head_width=0.1, head_length=0.1,
-             fc='k', ec='k')
+    ax_edit.text(s="Relative Humidity", x=0.5*(x[0]+x[1]), y=y[-1]+1, **font)
+    ax_edit.text(s="Sun Intensity", y=y[1], x=x[0]-1.87,
+                 rotation=90, **font, ha='center')
+    ax_edit.arrow(x[0], y[-1]+0.80, 3, 0, head_width=0.1, head_length=0.1,
+                  fc='k', ec='k')
+    ax_edit.arrow(x[0]-1.6, y[-1], 0, -3, head_width=0.1, head_length=0.1,
+                  fc='k', ec='k')
 
     # Defining MA% coding of style -------------------------------------------
     x2_labels = ['0%\nMA', '50%\nMA', '100%\nMA']
@@ -317,10 +286,10 @@ def default_style_legend(save_path=None, dpi=100, font=default_font):
                              MA=[0, 0.5, 1],
                              )
     for i in range(len(x2)):
-        ax.scatter(x2[i], y[0]-1, **(dict_list[i]))
+        ax_edit.scatter(x2[i], y[0]-1, **(dict_list[i]))
 
     for i in range(len(x2_labels)):
-        ax.text(s=x2_labels[i], x=x2[i], y=y[0]-1.75, **font, ha='center')
+        ax_edit.text(s=x2_labels[i], x=x2[i], y=y[0]-1.75, **font, ha='center')
 
     # Defining Temperature coding of style -----------------------------------
     x3_labels = ['$25^o$ C', '$45^o$ C', '$65^o$ C', '$85^o$ C']
@@ -330,14 +299,14 @@ def default_style_legend(save_path=None, dpi=100, font=default_font):
                              Nsuns=np.zeros(len(x3_labels))+8,
                              MA=np.ones(len(x3_labels)))
     for i in range(len(x3_labels)):
-        ax.scatter(x[-1]+1.15, y[::-1][i], **(dict_list[i]))
+        ax_edit.scatter(x[-1]+1.15, y[::-1][i], **(dict_list[i]))
     for i in range(len(x3_labels)):
-        ax.text(s=x3_labels[i], x=x[-1]+1.45, y=y[::-1][i],
-                **font, va='center')
-    ax.arrow(x[-1]+2.6, y[-1], 0, -3, head_width=0.1, head_length=0.1,
-             fc='k', ec='k')
-    ax.text(s="Temperature", y=y[1], x=x[-1]+2.8,
-            rotation=-90, **font, ha='center')
+        ax_edit.text(s=x3_labels[i], x=x[-1]+1.45, y=y[::-1][i],
+                     **font, va='center')
+    ax_edit.arrow(x[-1]+2.6, y[-1], 0, -3, head_width=0.1, head_length=0.1,
+                  fc='k', ec='k')
+    ax_edit.text(s="Temperature", y=y[1], x=x[-1]+2.8,
+                 rotation=-90, **font, ha='center')
 
     # Defining environmental medium coding of style ---------------------------
     x4_labels = ['$N_2$', 'air', '$O_2$']
@@ -352,19 +321,25 @@ def default_style_legend(save_path=None, dpi=100, font=default_font):
                              MA=np.ones(len(x4)),
                              O2=np.array([0, 21, 100]))
     for i in range(len(x4)):
-        ax.scatter(x4[i], y[0]-1, **(dict_list[i]))
+        ax_edit.scatter(x4[i], y[0]-1, **(dict_list[i]))
     for i in range(len(x4_labels)):
-        ax.text(s=x4_labels[i], x=x4[i], y=y[0]-1.5, **font, ha='center')
+        ax_edit.text(s=x4_labels[i], x=x4[i], y=y[0]-1.5, **font, ha='center')
 
-    ax.set_ylim([1.85, 8.5])
-    ax.set_xlim([1.85, 10])
-    ax.axis('off')
+    ax_edit.set_ylim([1.85, 8.5])
+    ax_edit.set_xlim([1.85, 10])
+    ax_edit.axis('off')
 
     if save_path is not None:
         fig.savefig(save_path)
         plt.close(fig)
-    else:
-        return fig
+
+    if ax is not None:
+        fig.canvas.draw()
+        img = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8,
+                            sep='')
+        img = img.reshape(fig.canvas.get_width_height()[::-1]+(3,))
+        img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        ax.imshow(img)
 
 
 def parity_plot(ax, Y_true, Y_pred, y_label, style_args=[]):
