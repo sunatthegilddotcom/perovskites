@@ -5,16 +5,15 @@ from scipy.cluster.vq import kmeans2, whiten
 from sklearn.decomposition import PCA
 import image_loader as loader
 MODEL_LOG_FOLDER = "drive/Shareddrives/Perovskites_DIRECT/models"
-
-
+dataset = loader.PLDataLoader()
 
 class Autoencoder:
-    def __init__(self, h5_name='Autoencoder.h5'):
+    def __init__(self, data=dataset, h5_name='Autoencoder.h5'):
         self.h5_name = h5_name
-    
+        self.data = data
+        
     def extract_autoencoder(self,
                             optimizer,
-                            data,
                             epochs=100,
                             batch_size=150,
                             file_path=MODEL_LOG_FOLDER):
@@ -44,13 +43,13 @@ class Autoencoder:
             which can be used to construct encoded versions of given input images.
 
         """
-        split = data.train_test_split(
+        split = self.data.train_test_split(
                                  test_size=0.2,
                                  random_state=42,
                                  return_dfs=True)
 
-        train_X = split[0]
-        valid_X = split[1]
+        train_X = split[0]/split[0].max()
+        valid_X = split[1]/split[1].max()
         train_index = list(split[4].index)
         validation_index = list(split[5].index)
 
@@ -91,7 +90,6 @@ class Autoencoder:
 
 
     def core_autoencoder_fxn(self,
-                             data,
                              epochs=100,
                              batch_size=150,
                              optimizer='adam'):
@@ -115,11 +113,10 @@ class Autoencoder:
         encoded_layer
             A 64x1 array with the values from the autoencoder
         """
-        pickle_output = data.sample(frac = 1.0, return_dfs=True)
-        full_dataset = pickle_output[0]
+        pickle_output = self.data.sample(frac = 1.0, return_dfs=True)
+        full_dataset = pickle_output[0]/pickle_output[0].max()
         full_dataset_labels = pickle_output[3]
         decoder, encoder = self.extract_autoencoder(optimizer,
-                                               data,
                                                epochs,
                                                batch_size)
         encoded_imgs = encoder.predict(full_dataset)
@@ -190,7 +187,6 @@ class Autoencoder:
 
 
     def autoencoder_to_classification(self,
-                                      data,
                                       epochs=100,
                                       batch_size=150,
                                       optimizer='adam',
@@ -238,7 +234,7 @@ class Autoencoder:
             will only be returned if "run_PCA" == True
         '''
 
-        autoencoder_output = self.core_autoencoder_fxn(data, epochs, batch_size, optimizer)[0]
+        autoencoder_output = self.core_autoencoder_fxn(epochs, batch_size, optimizer)
         encoded_array = autoencoder_output[0]
         train_indecies = autoencoder_output[1]
 
