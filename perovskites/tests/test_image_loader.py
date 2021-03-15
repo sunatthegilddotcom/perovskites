@@ -9,27 +9,26 @@ curr_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(curr_dir)
 data_path = os.path.join(parent_dir, 'data')
 sample_path = os.path.join(data_path, 'sample_data.pickle')
+DATA = loader._get_data_from_pickle(sample_path)
 
 class test_image_loader(unittest.TestCase):
-
-    self.data = loader._get_data_from_pickle(sample_path)
 
     def test_sample(self):
         """
         Tests if the PLDataLoader() class correctly samples PL image data
         """
-        self.assertIsInstance(self.data, tuple)
-        self.assertTrue(data[0].shape == (9, 32, 32, 1))
+        self.assertIsInstance(DATA, tuple)
+        self.assertTrue(DATA[0].shape == (9, 32, 32, 1))
 
     def test_create_pickle(self):
         """
         Tests if data can be correctly transfered into a pickle file.
         """
         pickle_path = os.path.join(data_path, 'test_pickle.pickle')
-        loader._create_data_pickle(self.data, pickle_path)
+        loader._create_data_pickle(DATA, pickle_path)
         data2 = loader._get_data_from_pickle(pickle_path)
-        for i in range(len(self.data)):
-          self.assertTrue(self.data[i].any() == data2[i].any())
+        for i in range(len(DATA)):
+          self.assertTrue(DATA[i].any() == data2[i].any())
 
 class test_image_processer(unittest.TestCase):
     def test_read_image(self):
