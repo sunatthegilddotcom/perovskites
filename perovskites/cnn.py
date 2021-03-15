@@ -8,6 +8,7 @@ import os
 import sys
 import json
 import re
+import numpy as np
 
 import pandas as pd
 from tensorflow.keras import layers, Sequential
@@ -15,7 +16,7 @@ from tqdm.keras import TqdmCallback
 from keras.models import model_from_json
 
 ###############################################################################
-# LOAD SETTINGS FROM THE 'settings.json' file.
+# LOAD SETTINGS FROM THE 'settings.json' file and other files
 ###############################################################################
 # Append the current folder to sys path
 parent_dir = os.path.dirname(__file__)
@@ -51,6 +52,11 @@ fit_json_name = MODEL_INFO['cnn_model_info']['fit_json_name']
 # compatible to each other.
 final_img_size = MODEL_INFO['target_image_size_pix']
 
+# default font for plots
+default_font = {'color': 'k',
+                'fontsize': 14,
+                'fontfamily': 'Arial'
+                }
 ###############################################################################
 # The CNN predictor class
 ###############################################################################
@@ -466,6 +472,27 @@ class CNNPredictor:
         self.save_model(save_to_drive=save_model_to_drive)
 
         print("\n3. Make the plots for visualizations")
+
+    def fit_plot(self, ax,):
+        """
+        Plots the error vs epoch plot for the current model.
+
+        Parameters
+        ----------
+        ax : A Matplotlib Axes object()
+
+        Returns
+        -------
+        None.
+
+        """
+        ax.plot(np.arange(self.epochs), self.history_df['loss'], 'o-',
+                label='Training loss', linewidth=1.2)
+        ax.plot(np.arange(self.epochs), self.history_df['val_loss'], 'o-',
+                label='Validation loss', linewidth=1.2)
+        ax.set_xlabel("epoch", **default_font)
+        ax.set_ylabel("Error", **default_font)
+        ax.legend(fontsize=int(default_font['fontsize']*0.8))
 
 
 ##############################################################################
