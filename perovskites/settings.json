@@ -3,7 +3,7 @@
     "target_image_size_pix": 32,
     "number_of_clusters": 10,
     "reduced_pca_dims": 10,
-    "y_col": "log(Ld80)",
+    "y_col": "Ld80",
     "FOV_col": "camera_FOV",
     "extract_channel": "true",
     "shared_drive_path": "/content/drive/Shareddrives/Perovskites_DIRECT",
