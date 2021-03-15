@@ -118,7 +118,7 @@ class Autoencoder:
         pickle_output = data.sample(frac = 1.0, return_dfs=True)
         full_dataset = pickle_output[0]
         full_dataset_labels = pickle_output[3]
-        decoder, encoder = extract_autoencoder(optimizer,
+        decoder, encoder = self.extract_autoencoder(optimizer,
                                                data,
                                                epochs,
                                                batch_size)
