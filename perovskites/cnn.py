@@ -18,12 +18,12 @@ from keras.models import model_from_json
 # LOAD SETTINGS FROM THE 'settings.json' file.
 ###############################################################################
 # Append the current folder to sys path
-utils_dir = os.path.dirname(__file__)
-parent_dir = os.path.dirname(utils_dir)
+parent_dir = os.path.dirname(__file__)
 settings_path = os.path.join(parent_dir, 'settings.json')
+utils_path = os.path.join(parent_dir, 'utils')
 with open(settings_path, 'r') as file:
     MODEL_INFO = json.load(file)
-sys.path.append(utils_dir)
+sys.path.append(utils_path)
 
 # Import the booleanize function
 from miscellaneous import booleanize
