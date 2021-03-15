@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from scipy.cluster.vq import kmeans2, whiten
 from sklearn.decomposition import PCA
-from utils.image_loader import loader
+from image_loader import loader
 
 
 def extract_autoencoder(optimizer,
