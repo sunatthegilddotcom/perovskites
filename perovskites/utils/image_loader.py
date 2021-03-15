@@ -42,7 +42,7 @@ DATA_DF_PATH = MODEL_INFO['data_info']['data_df_filename']
 if not os.path.exists(DATA_FOLDER_PATH):
     data_folder = MODEL_INFO['data_info']['local_data_folder']
     DATA_FOLDER_PATH = os.path.join(parent_dir, data_folder)
-                                    
+
 DATA_PICKLE_PATH = os.path.join(DATA_FOLDER_PATH, DATA_PICKLE_PATH)
 META_DF_PATH = os.path.join(DATA_FOLDER_PATH, META_DF_PATH)
 DATA_DF_PATH = os.path.join(DATA_FOLDER_PATH, DATA_DF_PATH)
