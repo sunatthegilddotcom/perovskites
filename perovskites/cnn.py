@@ -28,6 +28,7 @@ sys.path.append(utils_path)
 
 # Import the booleanize function
 from miscellaneous import booleanize
+import regression_visualization as reg_vis
 
 # Convert the boolean strings (if any) in the settings
 # dictionary to boolean-type values
@@ -80,7 +81,8 @@ class CNNPredictor:
 
     def __init__(self, name,
                  loss_metric="mean_absolute_percentage_error",
-                 optimizer="Ftrl"):
+                 optimizer="Ftrl",
+                 y_label=MODEL_INFO['y_col']):
         """
         Initializes the CNN model designed to best perform on the perovskites
         PL image data to return log(Ld80) values as predictions.
@@ -102,6 +104,7 @@ class CNNPredictor:
         self.batch_size = 0
         self.feed_shape = []
         self.model = Sequential()
+        self.y_label = y_label
 
         # The first convolutional layer with a small kernel
         self.model.add(layers.Conv2D(filters=32, kernel_size=3,
@@ -269,7 +272,8 @@ class CNNPredictor:
         fit_dict = dict(epochs=self.epochs, batch_size=self.batch_size,
                         feed_shape=list(self.feed_shape),
                         loss_metric=self.loss_metric,
-                        optimizer=self.optimizer)
+                        optimizer=self.optimizer,
+                        y_label=self.y_label)
         curr_fit_json = os.path.join(model_folder, fit_json_name)
         with open(curr_fit_json, "w") as file:
             json.dump(fit_dict, file, indent=4)
@@ -345,13 +349,14 @@ class CNNPredictor:
         self.feed_shape = list(fit_dict['feed_shape'])
         self.loss_metric = fit_dict['loss_metric']
         self.optimizer = fit_dict['optimizer']
+        self.y_label = fit_dict['y_label']
 
         # Compile the model
         self.model.compile(loss=self.loss_metric,
                            optimizer=self.optimizer)
 
     def fit(self, X, y, epochs=1, batch_size=None,
-            validation_split=0.2):
+            validation_split=0.2,):
         """
         Trains the model over X and y.
 
@@ -493,6 +498,41 @@ class CNNPredictor:
         ax.set_xlabel("epoch", **default_font)
         ax.set_ylabel("Error", **default_font)
         ax.legend(fontsize=int(default_font['fontsize']*0.8))
+
+    def parity_plot(self, ax, y_train, y_test, y_train_pred, y_test_pred,
+                    data_df_train, data_df_test,):
+        """
+        The parity plot with the environental conditions being used as the
+        merker styling.
+
+        Parameters
+        ----------
+        ax : Matplotlib.Axes() object
+            The Matplotlib.Axes() object for plotting
+        y_train : numpy.ndarray
+            The training y array
+        y_test : numpy.ndarray
+            The testing y array
+        y_train_pred : numpy.ndarray
+            The prediction of training y array
+        y_test_pred : numpy.ndarray
+            The prediction of testing y array
+        data_df_train : pandas.DataFrame()
+            The data_df dataframe containing the environmental features of
+            training dataset.
+        data_df_test : pandas.DataFrame()
+            The data_df dataframe containing the environmental features of
+            testing dataset.
+
+        Returns
+        -------
+        None.
+
+        """
+        reg_vis.styled_parity_plot(ax, y_train, y_test,
+                                   y_train_pred, y_test_pred,
+                                   data_df_train, data_df_test,
+                                   y_label=self.y_label,)
 
 
 ##############################################################################
