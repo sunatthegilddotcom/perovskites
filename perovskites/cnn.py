@@ -322,7 +322,7 @@ class CNNPredictor:
         load_model_json = os.path.join(model_folder, model_json_name)
         with open(load_model_json, "r") as file:
             model_dict = json.load(file)
-            self.model = model_from_json(model_dict)
+            self.load_layers_from_dict(model_dict)
 
         # The model's weights as h5 file
         load_model_h5 = os.path.join(model_folder, model_h5_name)
