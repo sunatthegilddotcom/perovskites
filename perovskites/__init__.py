@@ -1,4 +1,4 @@
 from .version import __version__
-from .utils.codebase import predict
+from .utils.image_loader import _get_data_from_pickle
 
-__all__ = [__version__, predict]
+__all__ = [__version__, _get_data_from_pickle]
