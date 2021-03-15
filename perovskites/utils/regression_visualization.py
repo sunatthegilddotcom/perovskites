@@ -15,7 +15,7 @@ REL_HUM_RANGE = np.array([0, 60])
 TEMP_RANGE = np.array([25, 85])
 MA_RANGE = np.array([0, 1])
 STYLE_VARIABLES = ['T', 'RH', 'soakSuns', 'MA', 'O2', 'N2']
-                 
+
 # default font
 default_font = {'color': 'k',
                 'fontsize': 14,
