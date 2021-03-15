@@ -534,6 +534,26 @@ class CNNPredictor:
                                    data_df_train, data_df_test,
                                    y_label=self.y_label,)
 
+    def parity_legend(self, ax, save_path=None, dpi=100):
+        """
+        Makes a legend for the parity plot to descrive the marker styles.
+
+        Parameters
+        ----------
+        ax : Matplotlib.Axes() object
+            The Matplotlib.Axes() object for plotting
+        save_path : str, optional
+            path to save the new legend plot. The default is None.
+        dpi : int, optional
+            The quality of image in dpi. The default is 100.
+
+        Returns
+        -------
+        None.
+
+        """
+        reg_vis.default_style_legend(ax=ax, save_path=save_path, dpi=dpi)
+
 
 ##############################################################################
 # The functions below this are just utility functions to be used within this
