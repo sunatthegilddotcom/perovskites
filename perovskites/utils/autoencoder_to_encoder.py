@@ -3,14 +3,14 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from scipy.cluster.vq import kmeans2, whiten
 from sklearn.decomposition import PCA
-import  image_loader as loader
-
+import image_loader as loader
+MODEL_LOG_FOLDER = "drive/Shareddrives/Perovskites_DIRECT/models"
 
 def extract_autoencoder(optimizer,
                         data,
                         epochs=100,
                         batch_size=150,
-                        file_path='/models'):
+                        file_path=MODEL_LOG_FOLDER):
     """
     Takes an input of multiple numpy arrays representing images
     and returns a fitted autoencoder.
