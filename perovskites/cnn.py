@@ -7,7 +7,6 @@ a PL image.
 import os
 import sys
 import json
-import ast
 import re
 
 import pandas as pd
@@ -173,7 +172,7 @@ class CNNPredictor:
         dict
             The model's dictionary of keras layers
         """
-        return ast.literal_eval(self.model.to_json())
+        return json.loads(self.model.to_json())
 
     def load_layers_from_dict(self, model_dict):
         """
