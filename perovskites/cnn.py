@@ -261,7 +261,9 @@ class CNNPredictor:
 
         # Save the model fit's parameters
         fit_dict = dict(epochs=self.epochs, batch_size=self.batch_size,
-                        feed_shape=list(self.feed_shape))
+                        feed_shape=list(self.feed_shape),
+                        loss_metric=self.loss_metric,
+                        optimizer=self.optimizer)
         curr_fit_json = os.path.join(model_folder, fit_json_name)
         with open(curr_fit_json, "w") as file:
             json.dump(fit_dict, file, indent=4)
@@ -332,9 +334,15 @@ class CNNPredictor:
         load_fit_json = os.path.join(model_folder, fit_json_name)
         with open(load_fit_json, "r") as file:
             fit_dict = json.load(file)
-        self.epochs += fit_dict['epochs']
+        self.epochs = fit_dict['epochs']
         self.batch_size = fit_dict['batch_size']
         self.feed_shape = list(fit_dict['feed_shape'])
+        self.loss_metric = fit_dict['loss_metric']
+        self.optimizer = fit_dict['optimizer']
+
+        # Compile the model
+        self.model.compile(loss=self.loss_metric,
+                           optimizer=self.optimizer)
 
     def fit(self, X, y, epochs=1, batch_size=None,
             validation_split=0.2):
