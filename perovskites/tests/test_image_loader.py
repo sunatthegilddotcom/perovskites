@@ -10,16 +10,16 @@ parent_dir = os.path.dirname(curr_dir)
 data_path = os.path.join(parent_dir, 'data')
 sample_path = os.path.join(data_path, 'sample_data.pickle')
 
-
 class test_image_loader(unittest.TestCase):
+
+    self.data = loader._get_data_from_pickle(sample_path)
 
     def test_sample(self):
         """
         Tests if the PLDataLoader() class correctly samples PL image data
         """
-        self.data = loader._get_data_from_pickle(sample_path)
         self.assertIsInstance(self.data, tuple)
-        self.assertTrue(self.data[0].shape == (9, 32, 32, 1))
+        self.assertTrue(data[0].shape == (9, 32, 32, 1))
 
     def test_create_pickle(self):
         """
