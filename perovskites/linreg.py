@@ -7,6 +7,7 @@ import os
 import sys
 import json
 import pickle
+import re
 
 import numpy as np
 import sklearn.metrics as metrics
@@ -38,6 +39,8 @@ MODEL_INFO = booleanize(MODEL_INFO)
 # Get the paths from the settings file.
 SHARED_DRIVE_PATH = MODEL_INFO['shared_drive_path']
 models_folder = MODEL_INFO['linreg_model_info']['models_folder_path']
+models_folder = os.path.join(*re.split('[\\\\/]', models_folder))
+
 local_models_folder = os.path.join(parent_dir, models_folder)
 drive_models_folder = os.path.join(SHARED_DRIVE_PATH, models_folder)
 

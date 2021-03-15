@@ -7,7 +7,7 @@ a PL image.
 import os
 import sys
 import json
-import ast
+import re
 
 import pandas as pd
 from tensorflow.keras import layers, Sequential
@@ -18,12 +18,12 @@ from keras.models import model_from_json
 # LOAD SETTINGS FROM THE 'settings.json' file.
 ###############################################################################
 # Append the current folder to sys path
-utils_dir = os.path.dirname(__file__)
-parent_dir = os.path.dirname(utils_dir)
+parent_dir = os.path.dirname(__file__)
 settings_path = os.path.join(parent_dir, 'settings.json')
+utils_path = os.path.join(parent_dir, 'utils')
 with open(settings_path, 'r') as file:
     MODEL_INFO = json.load(file)
-sys.path.append(utils_dir)
+sys.path.append(utils_path)
 
 # Import the booleanize function
 from miscellaneous import booleanize
@@ -35,6 +35,8 @@ MODEL_INFO = booleanize(MODEL_INFO)
 # Get the paths from the settings file.
 SHARED_DRIVE_PATH = MODEL_INFO['shared_drive_path']
 models_folder = MODEL_INFO['cnn_model_info']['models_folder_path']
+models_folder = os.path.join(*re.split('[\\\\/]', models_folder))
+
 local_models_folder = os.path.join(parent_dir, models_folder)
 drive_models_folder = os.path.join(SHARED_DRIVE_PATH, models_folder)
 
@@ -170,7 +172,7 @@ class CNNPredictor:
         dict
             The model's dictionary of keras layers
         """
-        return ast.literal_eval(self.model.to_json())
+        return json.loads(self.model.to_json())
 
     def load_layers_from_dict(self, model_dict):
         """
@@ -189,7 +191,9 @@ class CNNPredictor:
         json_string = json.dumps(model_dict)
         self.model = model_from_json(json_string,)
 
-    def save_model(self, save_to_drive=False, assign_new_name=None):
+    def save_model(self, save_to_drive=False,
+                   assign_new_name=None,
+                   overwrite_existing_model=False):
         """
         Saves a folder with all the relevant files containing
         information about the current model.
@@ -201,6 +205,8 @@ class CNNPredictor:
             folder. The default is False.
         assign_new_name : str, optional
             The new name of the model. The default is None.
+        overwrite_existing_model : bool, optional
+            Whether to overwite if another model exists with same name.
 
         Raises
         ------
@@ -231,10 +237,11 @@ class CNNPredictor:
             model_folder = os.path.join(local_models_folder, self.name)
 
         # Raise error if another model exists with the same name
-        if os.path.exists(model_folder):
+        if os.path.exists(model_folder) and not overwrite_existing_model:
             raise ValueError("A saved model already exists with this name.\n\
                              Try again with the arguement\n\
-                                 assign_new_name = <new_unique_model_name>")
+                             assign_new_name = <new_unique_model_name> or \n\
+                             use overwrite_existing_model = True.")
 
         os.makedirs(model_folder, exist_ok=True)
 
@@ -254,7 +261,9 @@ class CNNPredictor:
 
         # Save the model fit's parameters
         fit_dict = dict(epochs=self.epochs, batch_size=self.batch_size,
-                        feed_shape=self.feed_shape)
+                        feed_shape=list(self.feed_shape),
+                        loss_metric=self.loss_metric,
+                        optimizer=self.optimizer)
         curr_fit_json = os.path.join(model_folder, fit_json_name)
         with open(curr_fit_json, "w") as file:
             json.dump(fit_dict, file, indent=4)
@@ -300,7 +309,7 @@ class CNNPredictor:
                                         THE LOCAL REPOSITORY.")
 
         # If the model_folder is just the name of the model you want to load
-        if not ('/' or '\\' in model_folder):
+        if not ('/' in model_folder or '\\' in model_folder):
             model_folder = os.path.join(saved_models_folder, model_folder)
 
         if not os.path.exists(model_folder):
@@ -315,7 +324,7 @@ class CNNPredictor:
         load_model_json = os.path.join(model_folder, model_json_name)
         with open(load_model_json, "r") as file:
             model_dict = json.load(file)
-            self.model = model_from_json(model_dict)
+            self.load_layers_from_dict(model_dict)
 
         # The model's weights as h5 file
         load_model_h5 = os.path.join(model_folder, model_h5_name)
@@ -325,7 +334,15 @@ class CNNPredictor:
         load_fit_json = os.path.join(model_folder, fit_json_name)
         with open(load_fit_json, "r") as file:
             fit_dict = json.load(file)
-            self.epochs += fit_dict['epochs']
+        self.epochs = fit_dict['epochs']
+        self.batch_size = fit_dict['batch_size']
+        self.feed_shape = list(fit_dict['feed_shape'])
+        self.loss_metric = fit_dict['loss_metric']
+        self.optimizer = fit_dict['optimizer']
+
+        # Compile the model
+        self.model.compile(loss=self.loss_metric,
+                           optimizer=self.optimizer)
 
     def fit(self, X, y, epochs=1, batch_size=None,
             validation_split=0.2):
@@ -361,15 +378,15 @@ class CNNPredictor:
 
         # TThis just allows to print code with variable colunmn length
         # based on the size of training set.
-        _print_fit_table(len(y), epochs, batch_size)
+        _print_fit_table(len(y), self.epochs, self.batch_size, self.feed_shape)
         print("\n")
 
         history = self.model.fit(x=X, y=y, epochs=epochs,
                                  batch_size=batch_size,
-                                 verbose=0,
+                                 verbose=1,
                                  validation_split=validation_split,
                                  callbacks=self.callbacks)
-        self.history_df = pd.DataFrame(data=history)
+        self.history_df = pd.DataFrame(data=history.history)
 
     def evaluate_error(self, X, y):
         """
