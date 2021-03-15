@@ -10,7 +10,8 @@ def extract_autoencoder(optimizer,
                         data,
                         epochs=100,
                         batch_size=150,
-                        file_path=MODEL_LOG_FOLDER):
+                        file_path=MODEL_LOG_FOLDER,
+                        h5_name='AutoencoderXX.h5'):
     """
     Takes an input of multiple numpy arrays representing images
     and returns a fitted autoencoder.
@@ -39,11 +40,13 @@ def extract_autoencoder(optimizer,
     """
     split = data.train_test_split(
                              test_size=0.2,
-                             random_state=42)
+                             random_state=42,
+                             return_dfs=True)
+    
     train_X = split[0]
     valid_X = split[1]
-    train_ground = split[2]
-    valid_ground = split[3]
+    train_index = list(split[4].index)
+    validation_index = list(split[5].index)
 
     input_img = tf.keras.Input(shape=(32, 32, 1))
     stride = (3, 3)  # Change stride
@@ -75,8 +78,8 @@ def extract_autoencoder(optimizer,
                     validation_data=(valid_X, valid_X))
 
     encoder = tf.keras.Model(input_img, encoded)
-    autoencoder.save(file_path + '/autoencoder_model')
-    encoder.save(file_path + '/encoder_model')
+    autoencoder.save_weights(file_path + '/autoencoder_model/' + h5_name)
+    encoder.save_weights(file_path + '/encoder_model/' + h5_name)
 
     return autoencoder, encoder
 
@@ -105,17 +108,18 @@ def core_autoencoder_fxn(data,
     encoded_layer
         A 64x1 array with the values from the autoencoder
     """
-
-    X_train = data/data.max()
+    pickle_output = data.sample(frac = 1.0, return_dfs=True)
+    full_dataset = pickle_output[0]
+    full_dataset_labels = pickle_output[3]
     decoder, encoder = extract_autoencoder(optimizer,
-                                           X_train,
+                                           data,
                                            epochs,
                                            batch_size)
-    encoded_imgs = encoder.predict(X_train)
+    encoded_imgs = encoder.predict(full_dataset)
     output_array = []
     for enc_img in encoded_imgs:
         output_array.append(enc_img.flatten())
-    return np.array(output_array)
+    return np.array(output_array), full_dataset_labels
 
 
 def encoded_Kmeans_clustering(encoded_array, centroids=10, iter=20):
@@ -221,7 +225,9 @@ def autoencoder_to_classification(data,
         will only be returned if "run_PCA" == True
     '''
 
-    encoded_array = core_autoencoder_fxn(data, epochs, batch_size, optimizer)
+    autoencoder_output = core_autoencoder_fxn(data, epochs, batch_size, optimizer)[0]
+    encoded_array = autoencoder_output[0]
+    train_indecies = autoencoder_output[1]
 
     if run_PCA is True:
         encoded_array_PCA = PCA_dimension_reduction(encoded_array, PCA_dims)
@@ -231,10 +237,11 @@ def autoencoder_to_classification(data,
         clusters = encoded_Kmeans_clustering(encoded_array_PCA,
                                              centroids,
                                              iter)[1]
-        return (encoded_array, cluster_assignment, clusters, encoded_array_PCA)
+        
+        return (train_indecies, encoded_array, cluster_assignment, clusters, encoded_array_PCA)
 
     cluster_assignment = encoded_Kmeans_clustering(encoded_array,
                                                    centroids,
                                                    iter)[0]
     clusters = encoded_Kmeans_clustering(encoded_array, centroids, iter)[1]
-    return (encoded_array, cluster_assignment, clusters)
+    return (train_indecies, encoded_array, cluster_assignment, clusters)
