@@ -17,16 +17,6 @@ from skimage.filters import rank
 from skimage.morphology import disk
 from scipy.signal import correlate2d, find_peaks
 from skimage.transform import resize
-###############################################################################
-# THIS PIECE OF CODE MUST BE REMOVED WHILE MAKING A PACKAGE.
-# THE NEED OF TIFFFILE CAN BE INCLUDED IN THE ENV. DEPENDENCIES
-try:
-    import tifffile as tf
-except ImportError:
-    print('Installing tifffile package ...')
-    os.system("pip install tifffile")
-    print('Done!')
-    import tifffile as tf
 
 
 ###############################################################################
