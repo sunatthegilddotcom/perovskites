@@ -118,7 +118,7 @@ class Autoencoder:
         pickle_output = data.sample(frac = 1.0, return_dfs=True)
         full_dataset = pickle_output[0]
         full_dataset_labels = pickle_output[3]
-        decoder, encoder = extract_autoencoder(optimizer,
+        decoder, encoder = self.extract_autoencoder(optimizer,
                                                data,
                                                epochs,
                                                batch_size)
@@ -238,23 +238,23 @@ class Autoencoder:
             will only be returned if "run_PCA" == True
         '''
 
-        autoencoder_output = core_autoencoder_fxn(data, epochs, batch_size, optimizer)[0]
+        autoencoder_output = self.core_autoencoder_fxn(data, epochs, batch_size, optimizer)[0]
         encoded_array = autoencoder_output[0]
         train_indecies = autoencoder_output[1]
 
         if run_PCA is True:
-            encoded_array_PCA = PCA_dimension_reduction(encoded_array, PCA_dims)
-            cluster_assignment = encoded_Kmeans_clustering(encoded_array_PCA,
+            encoded_array_PCA = self.PCA_dimension_reduction(encoded_array, PCA_dims)
+            cluster_assignment = self.encoded_Kmeans_clustering(encoded_array_PCA,
                                                            centroids,
                                                            iter)[0]
-            clusters = encoded_Kmeans_clustering(encoded_array_PCA,
+            clusters = self.encoded_Kmeans_clustering(encoded_array_PCA,
                                                  centroids,
                                                  iter)[1]
 
             return (train_indecies, encoded_array, cluster_assignment, clusters, encoded_array_PCA)
 
-        cluster_assignment = encoded_Kmeans_clustering(encoded_array,
+        cluster_assignment = self.encoded_Kmeans_clustering(encoded_array,
                                                        centroids,
                                                        iter)[0]
-        clusters = encoded_Kmeans_clustering(encoded_array, centroids, iter)[1]
+        clusters = self.encoded_Kmeans_clustering(encoded_array, centroids, iter)[1]
         return (train_indecies, encoded_array, cluster_assignment, clusters)
