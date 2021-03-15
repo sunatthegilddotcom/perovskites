@@ -1,5 +1,3 @@
-import os
-import sys
 import unittest
 
 from perovskites.utils import image_processing
