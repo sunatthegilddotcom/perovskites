@@ -14,14 +14,14 @@
         "meta_df_filename": "features_meta_filtered.csv"
     },
     "cnn_model_info": {
-    	"models_folder_path": "cnn_saved_models",
+    	"models_folder_path": "models/cnn_saved_models",
     	"history_csv_name": "fit_history.csv",
     	"model_json_name": "model.json",
     	"model_h5_name": "model.h5",
     	"fit_json_name": "fit_info.json"
     },
     "linreg_model_info": {
-        "models_folder_path": "linreg_saved_models",
+        "models_folder_path": "models/linreg_saved_models",
         "fit_pickle_name": "fit_pickle.pickle"
     }
 }

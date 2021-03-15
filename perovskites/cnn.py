@@ -8,6 +8,7 @@ import os
 import sys
 import json
 import ast
+import re
 
 import pandas as pd
 from tensorflow.keras import layers, Sequential
@@ -35,6 +36,8 @@ MODEL_INFO = booleanize(MODEL_INFO)
 # Get the paths from the settings file.
 SHARED_DRIVE_PATH = MODEL_INFO['shared_drive_path']
 models_folder = MODEL_INFO['cnn_model_info']['models_folder_path']
+models_folder = os.path.join(*re.split('[\\\\/]', models_folder))
+
 local_models_folder = os.path.join(parent_dir, models_folder)
 drive_models_folder = os.path.join(SHARED_DRIVE_PATH, models_folder)
 
@@ -366,7 +369,7 @@ class CNNPredictor:
 
         history = self.model.fit(x=X, y=y, epochs=epochs,
                                  batch_size=batch_size,
-                                 verbose=0,
+                                 verbose=1,
                                  validation_split=validation_split,
                                  callbacks=self.callbacks)
         self.history_df = pd.DataFrame(data=history.history)
