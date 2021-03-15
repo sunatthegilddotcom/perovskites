@@ -7,6 +7,10 @@ Original file is located at
     https://colab.research.google.com/drive/1MNEynZxroAXy9FBpmgvrMrI71LiNDdpl
 """
 
+import numpy as np
+import matplotlib.pyplot as plt
+import random
+
 def assign_IDs(data, ID_list):
     ID_dict = {}
     for ii in range(len(ID_list)):
@@ -16,29 +20,29 @@ def assign_IDs(data, ID_list):
             ID_dict[ID_list[ii][1]] = [data[ii]]
     return ID_dict
 
-def visualize_clusters(ID_dict, color_map = 'gray'):
-  """Given a dictionary of IDs from assign_IDs function, plot 10 random 
-  images from each cluster group given by autoencoder"""
+def visualize_clusters(ID_dict, img_per_group = 10, color_map = 'gray'):
+  """Given a dictionary of IDs from assign_IDs function, plot img_per_group number 
+  of random images from each cluster group given by autoencoder"""
 
   # Iterating over cluster groups
   for i in range(len(ID_dict)):
     size = len(ID_dict[i])
 
-    # Need to deal with if the cluster group has less than 10 images
-    if size < 10: 
+    # Need to deal with if the cluster group has less than img_per_group images
+    if size < img_per_group: 
       # Create indexed array
       r = np.arange(size)
       z = size # Create so that when we plot the images, nested for loop does not go outside of range
 
     else:
-      # Pick 10 random images, then sort them by image number
-      r = random.sample(range(size), 10)
+      # Pick img_per_group random images, then sort them by image number
+      r = random.sample(range(size), img_per_group)
       r.sort()
-      z = 10
+      z = img_per_group
 
     for j in range(z):
       plt.subplots(figsize = (8, 6))
-      img = ID_dict[i][r[j]].reshape(32, 32) # Reshaping into (32, 32) for easier plotting
+      img = ID_dict[i][r[j]].reshape(32, 32) # Reshaping (32, 32, 1) into (32, 32) for easier plotting
       plt.imshow(img, cmap = color_map) # User can select preferred cmap when calling the function
       plt.title("Cluster group = " + str(i) + " Group size = " + str(size) + " Image number  = " + str(r[j]))
 
