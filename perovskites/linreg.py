@@ -20,15 +20,16 @@ from sklearn.linear_model import Ridge, TheilSenRegressor
 # LOAD SETTINGS FROM THE 'settings.json' file.
 ###############################################################################
 # Append the current folder to sys path
-curr_dir = os.path.dirname(__file__)
-parent_dir = os.path.dirname(curr_dir)
+parent_dir = os.path.dirname(__file__)
 settings_path = os.path.join(parent_dir, 'settings.json')
+utils_path = os.path.join(parent_dir, 'utils')
 with open(settings_path, 'r') as file:
     MODEL_INFO = json.load(file)
-sys.path.append(curr_dir)
+sys.path.append(utils_path)
 
 # Import the booleanize function
 from miscellaneous import booleanize
+import image_loader as loader
 
 # Convert the boolean strings (if any) in the settings
 # dictionary to boolean-type values
@@ -145,7 +146,8 @@ def linear_regressor(X_train, y_train,
 
     # Get the best regularization parameter by cross-validation
     if model_type == 'Lasso' or model_type == 'Ridge':
-        best_alpha = alpha_tuning(X_train, y_train, **alpha_tuning_params)
+        best_alpha, alpha_tuning_scores = alpha_tuning(X_train, y_train,
+                                                       **alpha_tuning_params)
         reg.set_params(alpha=best_alpha)
 
     # Scale the data
@@ -164,6 +166,7 @@ def linear_regressor(X_train, y_train,
     fit_results['feat_labels'] = feat_labels,
     fit_results['y_label'] = y_label
     fit_results['alpha_tuning_params'] = alpha_tuning_params
+    fit_results['alpha_tuning_scores'] = alpha_tuning_scores
     fit_results['model'] = reg
     fit_results['scaler'] = scaler
 
@@ -310,15 +313,21 @@ def alpha_tuning(X, y,
     best_alpha : float
         The best regularization hyperparameter value for the given dataset
         and model type.
+    grid_search_results : dict
+        The dictionary with two keys - 'alpha' and 'score' containing
+        arrays of alpha values and correponding scores.
 
     """
-    if model_type != 'Lasso' or model_type != 'Ridge':
+    if model_type != 'Lasso' and model_type != 'Ridge':
         raise ValueError("The tuning of the regularization alpha parameter\n\
                          is available only to the 'Lasso' and 'Ridge' model\n\
                              types.")
     reg_fit = linear_model_selector(model_type)
     if k_fold == 'leave_one_out':
         k_fold = len(y)
+
+    grand_alpha_list = []
+    grand_score_list = []
 
     def scan_alpha_vals(reg_fit, alpha_list):
         # Get the best alpha over the entire X
@@ -332,8 +341,11 @@ def alpha_tuning(X, y,
 
                 # The best score is the minimum score.
                 if error_score < best_score:
-                    best_score = score
+                    best_score = error_score
                     best_alpha = alpha
+
+                grand_alpha_list.append(alpha)
+                grand_score_list.append(error_score)
 
         # other use the k_fold number of splits for tuning with
         # validatoin error
@@ -350,6 +362,9 @@ def alpha_tuning(X, y,
             grid.fit(X, y)
             best_alpha = grid.best_params_['alpha']
             best_score = grid.best_score_
+            grand_alpha_list.extend(list(alpha_list))
+            mean_scores_list = grid.cv_results_['mean_test_score']
+            grand_score_list.extend(list(mean_scores_list))
 
         return best_alpha
 
@@ -368,4 +383,21 @@ def alpha_tuning(X, y,
         else:
             best_alpha = best_alpha_new
 
-    return best_alpha
+    grand_alpha_list, unique_inds = np.unique(grand_alpha_list,
+                                              return_index=True)
+    grand_score_list = np.abs(np.array(grand_score_list)[unique_inds])
+
+    return best_alpha, dict(alpha=grand_alpha_list, score=grand_score_list)
+
+
+
+dataset = loader.PLDataLoader()
+X_train, X_test, y_train, y_test, _, _, data_df_train, data_df_test = dataset.train_test_split(test_size=0.2,
+                                                            random_state=42,
+                                                            shuffle=True,
+                                                            return_dfs=True)
+y_train = np.log(y_train)
+y_test = np.log(y_test)
+
+#%%
+results = alpha_tuning(data_df_test.values, y_test)
