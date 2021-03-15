@@ -388,16 +388,3 @@ def alpha_tuning(X, y,
     grand_score_list = np.abs(np.array(grand_score_list)[unique_inds])
 
     return best_alpha, dict(alpha=grand_alpha_list, score=grand_score_list)
-
-
-
-dataset = loader.PLDataLoader()
-X_train, X_test, y_train, y_test, _, _, data_df_train, data_df_test = dataset.train_test_split(test_size=0.2,
-                                                            random_state=42,
-                                                            shuffle=True,
-                                                            return_dfs=True)
-y_train = np.log(y_train)
-y_test = np.log(y_test)
-
-#%%
-results = alpha_tuning(data_df_test.values, y_test)
