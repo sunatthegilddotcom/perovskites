@@ -115,7 +115,7 @@ class Autoencoder:
         """
         pickle_output = self.data.sample(frac = 1.0, return_dfs=True)
         full_dataset = pickle_output[0]/pickle_output[0].max()
-        full_dataset_labels = pickle_output[3]
+        full_dataset_labels = list(pickle_output[3].index)
         decoder, encoder = self.extract_autoencoder(optimizer,
                                                epochs,
                                                batch_size)
@@ -246,11 +246,16 @@ class Autoencoder:
             clusters = self.encoded_Kmeans_clustering(encoded_array_PCA,
                                                  centroids,
                                                  iter)[1]
-
-            return (train_indecies, encoded_array, cluster_assignment, clusters, encoded_array_PCA)
+            autoencoder_output_PCA = (train_indecies, encoded_array, cluster_assignment, clusters, encoded_array_PCA)
+            with open('drive/Shareddrives/Perovskites_DIRECT/autoencoder_output_PCA.pickle', 'wb') as f:
+                pickle.dump(autoencoder_output_PCA, f)
+            return autoencoder_output_PCA
 
         cluster_assignment = self.encoded_Kmeans_clustering(encoded_array,
                                                        centroids,
                                                        iter)[0]
         clusters = self.encoded_Kmeans_clustering(encoded_array, centroids, iter)[1]
-        return (train_indecies, encoded_array, cluster_assignment, clusters)
+        autoencoder_output_noPCA = (train_indecies, encoded_array, cluster_assignment, clusters)
+        with open('drive/Shareddrives/Perovskites_DIRECT/autoencoder_output_noPCA.pickle', 'wb') as f:
+            pickle.dump(autoencoder_output_noPCA, f)
+        return autoencoder_output_noPCA
