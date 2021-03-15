@@ -193,7 +193,7 @@ class CNNPredictor:
 
     def save_model(self, save_to_drive=False,
                    assign_new_name=None,
-                   overwrite_existng_model=False):
+                   overwrite_existing_model=False):
         """
         Saves a folder with all the relevant files containing
         information about the current model.
@@ -205,7 +205,7 @@ class CNNPredictor:
             folder. The default is False.
         assign_new_name : str, optional
             The new name of the model. The default is None.
-        overwrite_existng_model : bool, optional
+        overwrite_existing_model : bool, optional
             Whether to overwite if another model exists with same name.
 
         Raises
@@ -237,11 +237,11 @@ class CNNPredictor:
             model_folder = os.path.join(local_models_folder, self.name)
 
         # Raise error if another model exists with the same name
-        if os.path.exists(model_folder) and not overwrite_existng_model:
+        if os.path.exists(model_folder) and not overwrite_existing_model:
             raise ValueError("A saved model already exists with this name.\n\
                              Try again with the arguement\n\
                              assign_new_name = <new_unique_model_name> or \n\
-                             use overwrite_existng_model = True.")
+                             use overwrite_existing_model = True.")
 
         os.makedirs(model_folder, exist_ok=True)
 
@@ -307,7 +307,7 @@ class CNNPredictor:
                                         THE LOCAL REPOSITORY.")
 
         # If the model_folder is just the name of the model you want to load
-        if not ('/' or '\\' in model_folder):
+        if not ('/' in model_folder or '\\' in model_folder):
             model_folder = os.path.join(saved_models_folder, model_folder)
 
         if not os.path.exists(model_folder):
