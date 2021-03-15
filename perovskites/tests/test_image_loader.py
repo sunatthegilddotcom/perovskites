@@ -15,7 +15,7 @@ class test_image_loader(unittest.TestCase):
         """
         Tests if the PLDataLoader() class correctly samples PL image data
         """
-				self.data = loader._get_data_from_pickle(sample_path)
+        self.data = loader._get_data_from_pickle(sample_path)
         self.assertIsInstance(self.data, tuple)
         self.assertTrue(self.data[0].shape == (9, 32, 32, 1))
 
