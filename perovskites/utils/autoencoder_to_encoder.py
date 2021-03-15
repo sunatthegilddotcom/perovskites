@@ -8,11 +8,12 @@ import pickle
 MODEL_LOG_FOLDER = "drive/Shareddrives/Perovskites_DIRECT/models"
 dataset = loader.PLDataLoader()
 
+
 class Autoencoder:
     def __init__(self, data=dataset, h5_name='Autoencoder.h5'):
         self.h5_name = h5_name
         self.data = data
-        
+
     def extract_autoencoder(self,
                             optimizer,
                             epochs=100,
@@ -41,7 +42,8 @@ class Autoencoder:
 
         encoder:
             Model class -- encode model trained on input images,
-            which can be used to construct encoded versions of given input images.
+            which can be used to construct encoded versions of given input
+            images.
 
         """
         split = self.data.train_test_split(
@@ -51,28 +53,30 @@ class Autoencoder:
 
         train_X = split[0]/split[0].max()
         valid_X = split[1]/split[1].max()
-        train_index = list(split[4].index)
-        validation_index = list(split[5].index)
 
         input_img = tf.keras.Input(shape=(32, 32, 1))
         stride = (3, 3)  # Change stride
 
-        x = layers.Conv2D(32, stride, activation='relu', padding='same')(input_img)
+        x = layers.Conv2D(32, stride,
+                          activation='relu', padding='same')(input_img)
         x = layers.MaxPooling2D((2, 2), padding='same')(x)
         x = layers.Conv2D(16, stride, activation='relu', padding='same')(x)
         x = layers.MaxPooling2D((2, 2), padding='same')(x)
         x = layers.Conv2D(8, stride, activation='relu', padding='same')(x)
         x = layers.MaxPooling2D((2, 2), padding='same')(x)
-        encoded = layers.Conv2D(4, stride, activation='relu', padding='same')(x)
+        encoded = layers.Conv2D(4, stride,
+                                activation='relu', padding='same')(x)
 
-        x = layers.Conv2D(4, stride, activation='relu', padding='same')(encoded)
+        x = layers.Conv2D(4, stride,
+                          activation='relu', padding='same')(encoded)
         x = layers.UpSampling2D((2, 2))(x)
         x = layers.Conv2D(8, stride, activation='relu', padding='same')(x)
         x = layers.UpSampling2D((2, 2))(x)
         x = layers.Conv2D(16, stride, activation='relu', padding='same')(x)
         x = layers.UpSampling2D((2, 2))(x)
         x = layers.Conv2D(32, stride, activation='relu', padding='same')(x)
-        decoded = layers.Conv2D(1, (2, 2), activation='sigmoid', padding='same')(x)
+        decoded = layers.Conv2D(1, (2, 2),
+                                activation='sigmoid', padding='same')(x)
 
         autoencoder = tf.keras.Model(input_img, decoded)
         autoencoder.compile(optimizer=optimizer, loss='binary_crossentropy')
@@ -84,11 +88,12 @@ class Autoencoder:
                         validation_data=(valid_X, valid_X))
 
         encoder = tf.keras.Model(input_img, encoded)
-        autoencoder.save_weights(file_path + '/autoencoder_model/' + self.h5_name)
+        autoencoder.save_weights(file_path +
+                                 '/autoencoder_model/' +
+                                 self.h5_name)
         encoder.save_weights(file_path + '/encoder_model/' + self.h5_name)
 
         return autoencoder, encoder
-
 
     def core_autoencoder_fxn(self,
                              epochs=100,
@@ -114,23 +119,22 @@ class Autoencoder:
         encoded_layer
             A 64x1 array with the values from the autoencoder
         """
-        pickle_output = self.data.sample(frac = 1.0, return_dfs=True)
+        pickle_output = self.data.sample(frac=1.0, return_dfs=True)
         full_dataset = pickle_output[0]/pickle_output[0].max()
         full_dataset_labels = list(pickle_output[3].index)
         decoder, encoder = self.extract_autoencoder(optimizer,
-                                               epochs,
-                                               batch_size)
+                                                    epochs,
+                                                    batch_size)
         encoded_imgs = encoder.predict(full_dataset)
         output_array = []
         for enc_img in encoded_imgs:
             output_array.append(enc_img.flatten())
         return np.array(output_array), full_dataset_labels
 
-
-    def encoded_Kmeans_clustering(self,
-                                  encoded_array,
-                                  centroids=10,
-                                  iter=20):
+    def Kmeans_clustering(self,
+                          encoded_array,
+                          centroids=10,
+                          iter=20):
         """
         Parameters
         -------------------
@@ -146,9 +150,11 @@ class Autoencoder:
         Returns
         -------------------
         list_of_classifications:
-            A list of the index for the image and the cluster that it belongs to
+            A list of the index for the image and the cluster that it
+            belongs to
         list_of_centroids:
-            The list of centroids in ascending order
+            The list of centroids in ascending order corresponding to
+            the order of labels fed into the function
         """
         input_array = whiten(encoded_array)
         cluster_points, index_list = kmeans2(input_array,
@@ -160,7 +166,6 @@ class Autoencoder:
             pic_index_to_clusterID.append((index, val))
         pic_index_to_clusterID = np.array(pic_index_to_clusterID)
         return pic_index_to_clusterID, cluster_points
-
 
     def PCA_dimension_reduction(self,
                                 PCA_input,
@@ -185,7 +190,6 @@ class Autoencoder:
         pca.fit(PCA_input)
         transformed = pca.transform(PCA_input)
         return transformed
-
 
     def autoencoder_to_classification(self,
                                       epochs=100,
@@ -235,28 +239,40 @@ class Autoencoder:
             will only be returned if "run_PCA" == True
         '''
 
-        autoencoder_output = self.core_autoencoder_fxn(epochs, batch_size, optimizer)
+        autoencoder_output = self.core_autoencoder_fxn(epochs,
+                                                       batch_size,
+                                                       optimizer)
         encoded_array = autoencoder_output[0]
         train_indecies = autoencoder_output[1]
 
         if run_PCA is True:
-            encoded_array_PCA = self.PCA_dimension_reduction(encoded_array, PCA_dims)
-            cluster_assignment = self.encoded_Kmeans_clustering(encoded_array_PCA,
-                                                           centroids,
-                                                           iter)[0]
-            clusters = self.encoded_Kmeans_clustering(encoded_array_PCA,
-                                                 centroids,
-                                                 iter)[1]
-            autoencoder_output_PCA = (train_indecies, encoded_array, cluster_assignment, clusters, encoded_array_PCA)
-            with open('drive/Shareddrives/Perovskites_DIRECT/autoencoder_output_PCA.pickle', 'wb') as f:
+            encoded_array_PCA = self.PCA_dimension_reduction(encoded_array,
+                                                             PCA_dims)
+            cluster_assignment = self.Kmeans_clustering(encoded_array_PCA,
+                                                        centroids,
+                                                        iter)[0]
+            clusters = self.Kmeans_clustering(encoded_array_PCA,
+                                              centroids,
+                                              iter)[1]
+            autoencoder_output_PCA = (train_indecies,
+                                      encoded_array,
+                                      cluster_assignment,
+                                      clusters,
+                                      encoded_array_PCA)
+            with open('drive/Shareddrives/Perovskites_DIRECT' +
+                      '/autoencoder_output_PCA.pickle', 'wb') as f:
                 pickle.dump(autoencoder_output_PCA, f)
             return autoencoder_output_PCA
 
-        cluster_assignment = self.encoded_Kmeans_clustering(encoded_array,
-                                                       centroids,
-                                                       iter)[0]
-        clusters = self.encoded_Kmeans_clustering(encoded_array, centroids, iter)[1]
-        autoencoder_output_noPCA = (train_indecies, encoded_array, cluster_assignment, clusters)
-        with open('drive/Shareddrives/Perovskites_DIRECT/autoencoder_output_noPCA.pickle', 'wb') as f:
+        cluster_assignment = self.Kmeans_clustering(encoded_array,
+                                                    centroids,
+                                                    iter)[0]
+        clusters = self.Kmeans_clustering(encoded_array, centroids, iter)[1]
+        autoencoder_output_noPCA = (train_indecies,
+                                    encoded_array,
+                                    cluster_assignment,
+                                    clusters)
+        with open('drive/Shareddrives/Perovskites_DIRECT' +
+                  '/autoencoder_output_noPCA.pickle', 'wb') as f:
             pickle.dump(autoencoder_output_noPCA, f)
         return autoencoder_output_noPCA
