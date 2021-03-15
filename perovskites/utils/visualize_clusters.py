@@ -44,5 +44,6 @@ def visualize_clusters(ID_dict, img_per_group = 10, color_map = 'gray'):
       plt.subplots(figsize = (8, 6))
       img = ID_dict[i][r[j]].reshape(32, 32) # Reshaping (32, 32, 1) into (32, 32) for easier plotting
       plt.imshow(img, cmap = color_map) # User can select preferred cmap when calling the function
+      plt.axis('off')
       plt.title("Cluster group = " + str(i) + " Group size = " + str(size) + " Image number  = " + str(r[j]))
 
