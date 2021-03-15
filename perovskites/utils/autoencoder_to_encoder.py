@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow.keras import layers
 from scipy.cluster.vq import kmeans2, whiten
 from sklearn.decomposition import PCA
-from sklearn.model_selection import train_test_split
+from utils.image_loader import loader
 
 
 def extract_autoencoder(optimizer,
@@ -19,7 +19,7 @@ def extract_autoencoder(optimizer,
     -------------------
     optimizer:
         What optimizer fuction the autoencodre uses to train the model
-    X_train: Three dimensional numpy array
+    data: Three dimensional numpy array
         Array containing all 32x32 images that are to be fed into the model
     epochs: int
         Number of epochs that you desire your function to run
@@ -37,8 +37,7 @@ def extract_autoencoder(optimizer,
         which can be used to construct encoded versions of given input images.
 
     """
-    split = train_test_split(data,
-                             data,
+    split = data.train_test_split(
                              test_size=0.2,
                              random_state=42)
     train_X = split[0]
@@ -70,10 +69,10 @@ def extract_autoencoder(optimizer,
     autoencoder.compile(optimizer=optimizer, loss='binary_crossentropy')
     autoencoder.summary()
     autoencoder.fit(train_X,
-                    train_ground,
+                    train_X,
                     epochs=epochs,
                     batch_size=batch_size,
-                    validation_data=(valid_X, valid_ground))
+                    validation_data=(valid_X, valid_X))
 
     encoder = tf.keras.Model(input_img, encoded)
     autoencoder.save(file_path + '/autoencoder_model')
