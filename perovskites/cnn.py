@@ -369,7 +369,7 @@ class CNNPredictor:
                                  verbose=0,
                                  validation_split=validation_split,
                                  callbacks=self.callbacks)
-        self.history_df = pd.DataFrame(data=history)
+        self.history_df = pd.DataFrame(data=history.history)
 
     def evaluate_error(self, X, y):
         """
