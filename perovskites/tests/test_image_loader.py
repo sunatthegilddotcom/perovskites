@@ -2,6 +2,8 @@ import os
 import unittest
 
 from perovskites.utils import image_loader as loader
+from perovskites.utils import image_processing as process
+from perovskites.utils import miscellaneous as misc
 
 curr_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(curr_dir)
@@ -19,13 +21,57 @@ class test_image_loader(unittest.TestCase):
         self.assertIsInstance(self.data, tuple)
         self.assertTrue(self.data[0].shape == (9, 32, 32, 1))
 
-    # def test_train_test_split(self):
-    #     """
-    #     Tests if the data is split properly in the train_test_split() function.
-    #     """
-    #     split = self.data.train_test_split()
-    #     self.assertTrue(len(split) == 4)
-    #     X_train, X_test, y_train, y_test = split
-    #     self.assertTrue(len(X_train) + len(X_test) == 9)
-    #     self.assertTrue(len(y_train) + len(y_test) == 9)
-    #     self.assertTrue(len(X_test) == 1)
+
+class test_image_processer(unittest.TestCase):
+    def test_read_image(self):
+        """
+        Tests read_image() function.
+        """
+
+    def test_mean_over_depth(self):
+        """
+        Tests mean_over_depth() function.
+        """
+
+    def test_normalize(self):
+        """
+        Tests normalize() function.
+        """
+
+    def test_crop_image(self):
+        """
+        Tests crop_image() function.
+        """
+
+    def test_get_channel(self):
+        """
+        Tests get_channel() function.
+        """
+
+    def test_resize_base_on_FOV(self):
+        """
+        Tests resize_based_on_FOV() function.
+        """
+
+    def test_img_as_feed(self):
+        """
+        Tests img_as_feed() function.
+        """
+
+
+class test_miscellaneous(unittest.TestCase):
+
+    def test_booleanize(self):
+        """
+        Tests booleanize() function.
+        """
+
+    def test_convert_to_long_path(self):
+        """
+        Tests convert_to_long_path() function.
+        """
+
+    def test_best_rowcol_split(self):
+        """
+        Tests best_rowcol_split() function.
+        """
