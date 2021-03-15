@@ -9,7 +9,7 @@ MODEL_LOG_FOLDER = "drive/Shareddrives/Perovskites_DIRECT/models"
 dataset = loader.PLDataLoader()
 
 
-class Autoencoder:
+class autoencoder:
     def __init__(self, data=dataset, h5_name='Autoencoder.h5'):
         self.h5_name = h5_name
         self.data = data
