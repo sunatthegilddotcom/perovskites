@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-This module contains functions for training or using a trained CNN to obtain
-y prediction (a single output like Ld80) from a PL image.
+This module contains functions for training or using a trained Convolutional
+Neural Network (CNN) to obtain y prediction (a single output like Ld80) from
+a PL image.
 """
 import os
 import sys
@@ -9,7 +10,6 @@ import json
 import ast
 
 import pandas as pd
-import tensorflow as tf
 from tensorflow.keras import layers, Sequential
 from tqdm.keras import TqdmCallback
 from keras.models import model_from_json
@@ -18,12 +18,12 @@ from keras.models import model_from_json
 # LOAD SETTINGS FROM THE 'settings.json' file.
 ###############################################################################
 # Append the current folder to sys path
-curr_dir = os.path.dirname(__file__)
-parent_dir = os.path.dirname(curr_dir)
+parent_dir = os.path.dirname(__file__)
 settings_path = os.path.join(parent_dir, 'settings.json')
+utils_path = os.path.join(parent_dir, 'utils')
 with open(settings_path, 'r') as file:
     MODEL_INFO = json.load(file)
-sys.path.append(curr_dir)
+sys.path.append(utils_path)
 
 # Import the booleanize function
 from miscellaneous import booleanize
@@ -34,14 +34,15 @@ MODEL_INFO = booleanize(MODEL_INFO)
 
 # Get the paths from the settings file.
 SHARED_DRIVE_PATH = MODEL_INFO['shared_drive_path']
-models_folder = MODEL_INFO['saved_model_info']['models_folder_path']
+models_folder = MODEL_INFO['cnn_model_info']['models_folder_path']
 local_models_folder = os.path.join(parent_dir, models_folder)
 drive_models_folder = os.path.join(SHARED_DRIVE_PATH, models_folder)
 
 # Get the names of individual files to be saved
-history_csv_name = MODEL_INFO['saved_model_info']['history_csv_name']
-model_json_name = MODEL_INFO['saved_model_info']['model_json_name']
-model_h5_name = MODEL_INFO['saved_model_info']['model_h5_name']
+history_csv_name = MODEL_INFO['cnn_model_info']['history_csv_name']
+model_json_name = MODEL_INFO['cnn_model_info']['model_json_name']
+model_h5_name = MODEL_INFO['cnn_model_info']['model_h5_name']
+fit_json_name = MODEL_INFO['cnn_model_info']['fit_json_name']
 
 # The size of the image to be fed to the CNN.
 # It's recommended to make changes to this in the settings to keep modules
@@ -89,6 +90,9 @@ class CNNPredictor:
         self.name = name  # The unique name of the model
         self.loss_metric = loss_metric
         self.optimizer = optimizer
+        self.epochs = 0
+        self.batch_size = 0
+        self.feed_shape = []
         self.model = Sequential()
 
         # The first convolutional layer with a small kernel
@@ -215,24 +219,24 @@ class CNNPredictor:
         if assign_new_name:
             self.name = assign_new_name
 
+        # Raise error if you do not have access to the shared drive
+        if save_to_drive and not os.path.exists(drive_models_folder):
+            raise FileNotFoundError("YOU DO NOT HAVE ACCESS TO THE\n\
+                                    SHARED DRIVE.")
+
         # The path to the models folder
         if save_to_drive:
-            model_folder = drive_models_folder
+            model_folder = os.path.join(drive_models_folder, self.name)
         else:
-            model_folder = local_models_folder
-        model_folder = os.path.join(model_folder, self.name)
+            model_folder = os.path.join(local_models_folder, self.name)
 
         # Raise error if another model exists with the same name
         if os.path.exists(model_folder):
             raise ValueError("A saved model already exists with this name.\n\
                              Try again with the arguement\n\
                                  assign_new_name = <new_unique_model_name>")
-        os.makedirs(model_folder, exist_ok=True)
 
-        # Raise error if you do not have access to the shared drive
-        if save_to_drive and not os.path.exists(model_folder):
-            raise FileNotFoundError("YOU DO NOT HAVE ACCESS TO THE\n\
-                                    SHARED DRIVE.")
+        os.makedirs(model_folder, exist_ok=True)
 
         # The training history as csv file
         curr_model_hist = os.path.join(model_folder, history_csv_name)
@@ -247,6 +251,13 @@ class CNNPredictor:
         # The model's weights as h5 file
         curr_model_h5 = os.path.join(model_folder, model_h5_name)
         self.model.save_weights(curr_model_h5)
+
+        # Save the model fit's parameters
+        fit_dict = dict(epochs=self.epochs, batch_size=self.batch_size,
+                        feed_shape=self.feed_shape)
+        curr_fit_json = os.path.join(model_folder, fit_json_name)
+        with open(curr_fit_json, "w") as file:
+            json.dump(fit_dict, file, indent=4)
 
     def load_model(self, model_folder, from_drive=False):
         """
@@ -310,6 +321,12 @@ class CNNPredictor:
         load_model_h5 = os.path.join(model_folder, model_h5_name)
         self.model.load_weights(load_model_h5, by_name=True)
 
+        # The previous fit's properties
+        load_fit_json = os.path.join(model_folder, fit_json_name)
+        with open(load_fit_json, "r") as file:
+            fit_dict = json.load(file)
+            self.epochs += fit_dict['epochs']
+
     def fit(self, X, y, epochs=1, batch_size=None,
             validation_split=0.2):
         """
@@ -338,9 +355,13 @@ class CNNPredictor:
         if batch_size < 1:
             batch_size = int(batch_size*len(y))
 
+        self.epochs += epochs
+        self.batch_size = batch_size
+        self.feed_shape = list(X.shape)
+
         # TThis just allows to print code with variable colunmn length
         # based on the size of training set.
-        _print_fit_table(len(y), epochs, batch_size)
+        _print_fit_table(len(y), self.epochs, self.batch_size, self.feed_shape)
         print("\n")
 
         history = self.model.fit(x=X, y=y, epochs=epochs,

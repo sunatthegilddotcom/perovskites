@@ -19,9 +19,9 @@ from sklearn.model_selection import train_test_split
 # Append the current folder to sys path
 curr_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(curr_dir)
-settings_path = os.path.join(parent_dir, 'settings.json')
+SETTINGS_PATH = os.path.join(parent_dir, 'settings.json')
 
-with open(settings_path, 'r') as file:
+with open(SETTINGS_PATH, 'r') as file:
     MODEL_INFO = json.load(file)
 
 sys.path.append(curr_dir)
