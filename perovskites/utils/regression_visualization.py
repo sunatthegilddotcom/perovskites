@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-This function contains visualization functions for the linear regression.
+This function contains visualization functions for the regression models
 """
 import sys
 import os
@@ -13,8 +13,8 @@ NSUNS_RANGE = np.array([1, 32])
 REL_HUM_RANGE = np.array([0, 60])
 TEMP_RANGE = np.array([25, 85])
 MA_RANGE = np.array([0, 1])
-STYLE_VARIABLES = ['T', 'RH', 'MA', 'O2', 'soakSuns']
-
+STYLE_VARIABLES = ['T', 'RH', 'soakSuns', 'MA', 'O2', 'N2']
+                 
 # default font
 default_font = {'color': 'k',
                 'fontsize': 14,
@@ -25,20 +25,144 @@ default_font = {'color': 'k',
 curr_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(curr_dir)
 sys.path.append(curr_dir)
+sys.path.append(parent_dir)
 import image_processing as impr
+from linreg import score
 
-###############################################################################
-# SCATTER PLOT MARKER STYLING BASED ON ENV. CONDITIONS
-###############################################################################
-def error_evolution_plot(ax, error_list, x_list):
+
+def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
+                       data_df_train, data_df_test, y_label,
+                       scoring_list=['mean_absolute_percentage_error'],
+                       scoring_labels_list=['MAE %']):
+    """
+    Plots a parity plot for predicted y vs true y with marker styling
+    based on the environmental features using the passed Axes object()
+
+    Parameters
+    ----------
+    ax : Matplotlib Axes object
+        The Matplotlib Axes object.
+    y_train : numpy.ndarray
+        The train y array.
+    y_test : numpy.ndarray
+        The test y array.
+    y_train_pred : numpy.ndarray
+        The train y prediction array.
+    y_test_pred : numpy.ndarray
+        The test y prediction array.
+    data_df_train : pandas.DataFrame
+        The training dataFrame.
+    data_df_test : pandas.DataFrame
+        The testing dataFrame.
+    y_label : str
+        The name of y variable.
+    scoring_list : list, optional
+        The list of scoring strings. The default is
+        ['mean_absolute_percentage_error'].
+    scoring_labels_list : list, optional
+        The list of labels to the scoring_list elements.
+        The default is ['MAE %']. It showuld be of same length as
+        scoring_list.
+
+    Raises
+    -------
+    ValueError:
+        When the scoring_list and scoring_labels_list do not have the same
+        lengths.
+
+    Returns
+    -------
+    None.
+
+    """
+    if len(scoring_labels_list) != len(scoring_list):
+        raise ValueError("Every scoring listed in the scoring_list must be\n\
+                         given a name in the scoring_labels_list")
+
+    arg_vals = STYLE_VARIABLES.copy()
+    arg_vals[arg_vals.index('soakSuns')] = 'Nsuns'
+
+    grand_y = np.concat([y_train, y_test, y_test, y_test_pred])
+    # Create a styling for the train data ------------------------------------
+    style_dict = {}
+    for key, key_df in zip(arg_vals, STYLE_VARIABLES):
+        style_dict.update({key: data_df_train[key_df].values})
+    train_style_args = style_coding(**style_dict)
+
+    # Train data scatter plot
+    parity_plot(ax, y_train, y_train_pred, y_label,
+                style_args=train_style_args)
+
+    count = 0
+    description1 = ''
+    for scoring, scoring_label in zip(scoring_list, scoring_labels_list):
+        score_val = score(y_train, y_train_pred, scoring=scoring)
+        description_row = 'train '+scoring_label+' = {.2f}%'.format(score_val)
+        if count != 0:
+            description_row = '\n'+description_row
+        description1 += description_row
+        count += 1
+
+    handle1 = ax.scatter(np.max(grand_y), c='w', s=1)
+    handles = [handle1]
+    labels = [description1]
+
+    # Create a styling for the test data set ---------------------------------
+    test_style_dict = {
+                        'marker': 'X',
+                        's': 150,
+                        'c': 'k',
+                        'edgecolor': 'y',
+                        'linewidth': 1.5,
+                    }
+    handle2 = ax.scatter(y_test, y_test_pred, zorder=len(y_train)+1,
+                         **test_style_dict)
+    count = 0
+    description2 = ''
+    for scoring, scoring_label in zip(scoring_list, scoring_labels_list):
+        score_val = score(y_test, y_test_pred, scoring=scoring)
+        description_row = 'test '+scoring_label+' = {.2f}%'.format(score_val)
+        if count != 0:
+            description_row = '\n'+description_row
+        description2 += description_row
+        count += 1
+    handles += [handle2]
+    labels += [description2]
+
+
+def error_evolution_plot(ax, error_list, x_list,
+                         xlabel, ylabel):
+    """
+    Makes a simple scatter plot for any error.
+
+    Parameters
+    ----------
+    ax : Matplotlib Axes object()
+        The Matplotlib Axes object.
+    error_list : seq
+        The list of errors.
+    x_list : seq
+        The list of x values corresponding to errors.
+    xlabel : str
+        The name of x variables.
+    ylabel : str
+        The name of error.
+
+    Returns
+    -------
+    None.
+
+    """
     ax.scatter(x_list, error_list, s=8)
     ax.scatter(x_list, error_list, s=4, c='w')
     ax.plot(x_list, error_list, linewidth=1.5)
+    ax.set_ylabel(ylabel, **default_font)
+    ax.set_xlabel(xlabel, **default_font)
 
 
 def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
     """
-    Makes the coefficient bar chart for the trained linear regression model.
+    Makes the coefficient bar chart for the a linear regression model.
 
     Parameters
     ----------
@@ -88,57 +212,37 @@ def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
     return handle
 
 
-def parity_plot(ax, Y_true, Y_pred, y_label, style_args=[]):
-    """Makes the Parity plot in the matplotlib.Axes() object given.
-    For use, first make an Axes(). For example :
-        fig, ax = plt.subplots(1,1)
-    Then pass this ax into the function.
 
-    Paramters
-    ---------------
-    ax : matplotlib.Axes() object
-        The axes object to make the plot
-    Y_true : np.array
-        True Y values
-    Y_pred : np.array
-        Predicted Y values
-    y_label : str
-        The name of y
-    style_args : list of dicts, optional
-        List of marker stlying dicts. Each element in list
-        must be a styling dict for corresponding data point.
+
+
+def train_validation_error(ax, history_csv, loss_metric):
+    """
+    Plots the training and validation error plots vs the epoch count
+
+    Parameters
+    ----------
+    ax : Matplotlib Axes object
+        A matplotlib axes object
+    history_csv : pandas.DataFrame
+        The history csv of a Keras model fit.
+    loss_metric : str
+        The loss_metric used
 
     Returns
-    ------------------
-    Matplotlib scatter plot handle
+    -------
+    None.
 
     """
-
-    if y_label is not None:
-        ax.set_ylabel('$' + y_label + '_{pred}$', **default_font)
-        ax.set_xlabel('$' + y_label + '_{obs}$', **default_font)
-    ax.tick_params(axis='x', labelsize=default_font['fontsize'])
-    ax.tick_params(axis='y', labelsize=default_font['fontsize'])
-
-    max_point = np.max([np.max(Y_true), np.max(Y_pred)])
-    min_point = np.min([np.min(Y_true), np.min(Y_pred)])
-
-    ax.plot([min_point, max_point], [min_point, max_point],
-            linestyle='dashed',
-            color='gray',
-            linewidth=1.5,
-            alpha=0.75
-            )
-
-    alpha = 0.85
-    if len(style_args) == 0:
-        handle = ax.scatter(Y_true, Y_pred, alpha=alpha)
-    else:
-        for i in range(len(Y_true)):
-            handle = ax.scatter(Y_true[i], Y_pred[i],
-                                **(style_args[i]), alpha=alpha)
-
-    return handle
+    epochs = np.arange(len(history_csv))
+    ax.plot(np.arange(epochs), history_csv['loss'], 'o-',
+            c='dodgerblue',
+            label='Training loss')
+    ax.plot(np.arange(epochs), history_csv['val_loss'], 'o-',
+            c='brown',
+            label='Validation loss')
+    ax.set_xlabel("epoch", **default_font)
+    ax.set_ylabel(loss_metric, **default_font)
+    ax.legend(fontsize=int(default_font['fontsize']*0.8))
 
 
 def default_style_legend(save_path=None, dpi=100, font=default_font):
@@ -261,6 +365,59 @@ def default_style_legend(save_path=None, dpi=100, font=default_font):
         plt.close(fig)
     else:
         return fig
+
+
+def parity_plot(ax, Y_true, Y_pred, y_label, style_args=[]):
+    """Makes the Parity plot in the matplotlib.Axes() object given.
+    For use, first make an Axes(). For example :
+        fig, ax = plt.subplots(1,1)
+    Then pass this ax into the function.
+
+    Paramters
+    ---------------
+    ax : matplotlib.Axes() object
+        The axes object to make the plot
+    Y_true : np.array
+        True Y values
+    Y_pred : np.array
+        Predicted Y values
+    y_label : str
+        The name of y
+    style_args : list of dicts, optional
+        List of marker stlying dicts. Each element in list
+        must be a styling dict for corresponding data point.
+
+    Returns
+    ------------------
+    Matplotlib scatter plot handle
+
+    """
+
+    if y_label is not None:
+        ax.set_ylabel('$' + y_label + '_{pred}$', **default_font)
+        ax.set_xlabel('$' + y_label + '_{obs}$', **default_font)
+    ax.tick_params(axis='x', labelsize=default_font['fontsize'])
+    ax.tick_params(axis='y', labelsize=default_font['fontsize'])
+
+    max_point = np.max([np.max(Y_true), np.max(Y_pred)])
+    min_point = np.min([np.min(Y_true), np.min(Y_pred)])
+
+    ax.plot([min_point, max_point], [min_point, max_point],
+            linestyle='dashed',
+            color='gray',
+            linewidth=1.5,
+            alpha=0.75
+            )
+
+    alpha = 0.85
+    if len(style_args) == 0:
+        handle = ax.scatter(Y_true, Y_pred, alpha=alpha)
+    else:
+        for i in range(len(Y_true)):
+            handle = ax.scatter(Y_true[i], Y_pred[i],
+                                **(style_args[i]), alpha=alpha)
+
+    return handle
 
 
 def style_coding(T=None, RH=None, Nsuns=None, MA=None,
@@ -410,3 +567,7 @@ def style_coding(T=None, RH=None, Nsuns=None, MA=None,
         }]
 
     return dict_list
+
+
+
+    
