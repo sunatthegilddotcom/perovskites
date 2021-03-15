@@ -131,36 +131,6 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     labels += [description2]
 
 
-def error_evolution_plot(ax, error_list, x_list,
-                         xlabel, ylabel):
-    """
-    Makes a simple scatter plot for any error.
-
-    Parameters
-    ----------
-    ax : Matplotlib Axes object()
-        The Matplotlib Axes object.
-    error_list : seq
-        The list of errors.
-    x_list : seq
-        The list of x values corresponding to errors.
-    xlabel : str
-        The name of x variables.
-    ylabel : str
-        The name of error.
-
-    Returns
-    -------
-    None.
-
-    """
-    ax.scatter(x_list, error_list, s=8)
-    ax.scatter(x_list, error_list, s=4, c='w')
-    ax.plot(x_list, error_list, linewidth=1.5)
-    ax.set_ylabel(ylabel, **default_font)
-    ax.set_xlabel(xlabel, **default_font)
-
-
 def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
     """
     Makes the coefficient bar chart for the a linear regression model.
