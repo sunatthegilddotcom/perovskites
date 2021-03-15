@@ -10,13 +10,13 @@ acquisition softwares like ImageJ, micromanager etc.
 """
 # imports
 import numpy as np
-import os
 
 from skimage.util import img_as_ubyte
 from skimage.filters import rank
 from skimage.morphology import disk
 from scipy.signal import correlate2d, find_peaks
 from skimage.transform import resize
+import tifffile as tf
 
 
 ###############################################################################
