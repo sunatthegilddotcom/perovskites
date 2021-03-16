@@ -276,3 +276,33 @@ class autoencoder:
                   '/autoencoder_output_noPCA.pickle', 'wb') as f:
             pickle.dump(autoencoder_output_noPCA, f)
         return autoencoder_output_noPCA
+    
+    def build_autoencoder(self, epochs=100, 
+                          batch_size=150,
+                          optimizer='adam'):
+        input_img = tf.keras.Input(shape=(32, 32, 1))
+        stride = (3,3) # Change stride
+
+        x = layers.Conv2D(32, stride, activation='relu', padding='same')(input_img)
+        x = layers.MaxPooling2D((2, 2), padding='same')(x)
+        x = layers.Conv2D(16, stride, activation='relu', padding='same')(x)
+        x = layers.MaxPooling2D((2, 2), padding='same')(x)
+        x = layers.Conv2D(8, stride, activation='relu', padding='same')(x)
+        x = layers.MaxPooling2D((2, 2), padding='same')(x)
+        encoded = layers.Conv2D(4, stride, activation='relu', padding='same')(x)
+
+        x = layers.Conv2D(4, stride, activation='relu', padding='same')(encoded)
+        x = layers.UpSampling2D((2, 2))(x)
+        x = layers.Conv2D(8, stride, activation='relu', padding='same')(x)
+        x = layers.UpSampling2D((2, 2))(x)
+        x = layers.Conv2D(16, stride, activation='relu', padding='same')(x)
+        x = layers.UpSampling2D((2, 2))(x)
+        x = layers.Conv2D(32, stride, activation='relu', padding='same')(x)
+        decoded = layers.Conv2D(1, (2, 2), activation='sigmoid', padding='same')(x)
+
+        autoencoder = tf.keras.Model(input_img, decoded)
+        autoencoder.compile(optimizer=optimizer, loss='binary_crossentropy')
+
+        encoder = tf.keras.Model(input_img, encoded)
+        encoder.compile(optimizer=optimizer, loss='binary_crossentropy')
+        return autoencoder, encoder
