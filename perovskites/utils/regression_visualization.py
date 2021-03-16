@@ -143,7 +143,7 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     handles += [handle2]
     labels += [description2]
 
-    ax.legend(handles, labels, loc=1, **default_font)
+    ax.legend(handles, labels, loc=1, fontsize=default_font['fontsize'])
 
 
 def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
@@ -277,15 +277,15 @@ def parity_legend(ax=None, save_path=None, dpi=100, font=default_font):
     for i in range(len(xlabels)):
         ax_edit.text(s=xlabels[i], x=x[i], y=y[-1]+0.35, **font, ha='center')
     for i in range(len(ylabels)):
-        ax_edit.text(s=ylabels[i], x=x[0]-1.55, y=y[::-1][i],
-                     **font, va='center')
+        ax_edit.text(s=ylabels[i], x=x[0]-1.45, y=y[::-1][i],
+                     **font, va='center', ha='center')
 
     ax_edit.text(s="Relative Humidity", x=0.5*(x[0]+x[1]), y=y[-1]+1, **font)
     ax_edit.text(s="Sun Intensity", y=y[1], x=x[0]-1.87,
                  rotation=90, **font, ha='center')
     ax_edit.arrow(x[0], y[-1]+0.80, 3, 0, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
-    ax_edit.arrow(x[0]-1.6, y[-1], 0, -3, head_width=0.1, head_length=0.1,
+    ax_edit.arrow(x[0]-1.9, y[-1], 0, -3, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
 
     # Defining MA% coding of style -------------------------------------------
