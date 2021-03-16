@@ -366,6 +366,7 @@ def alpha_tuning(X, y,
 
     grand_alpha_list = []
     grand_score_list = []
+    alpha_list = np.array(alpha_list)
     alpha_list_min = alpha_list.min()
     alpha_list_max = alpha_list.max()
 

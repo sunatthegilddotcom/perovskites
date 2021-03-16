@@ -168,7 +168,11 @@ def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
 
     Returns
     -------
-    Matplotlib scatter plot handle
+    handle : Matplotlib scatter plot handle
+    coeff_values : numpy.ndarray
+        The significant coefficient values
+    feat_labels : numpy.ndarray
+        The labels of significant features
 
     """
     coeff_values = np.array(coeff_values)
@@ -195,7 +199,7 @@ def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
     handle = ax.scatter(bar_x[-1],
                         np.max(np.abs(coeff_values)),
                         color='w', s=1)
-    return handle
+    return handle, coeff_values, feat_labels
 
 
 def train_validation_error(ax, history_csv, loss_metric):
