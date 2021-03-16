@@ -280,12 +280,13 @@ def parity_legend(ax=None, save_path=None, dpi=100, font=default_font):
         ax_edit.text(s=ylabels[i], x=x[0]-1.45, y=y[::-1][i],
                      **font, va='center', ha='center')
 
-    ax_edit.text(s="Relative Humidity", x=0.5*(x[0]+x[1]), y=y[-1]+1, **font)
-    ax_edit.text(s="Sun Intensity", y=y[1], x=x[0]-1.87,
+    ax_edit.text(s="Relative Humidity", x=0.5*(x[1]+x[2]), y=y[-1]+1,
+                 **font, ha='center')
+    ax_edit.text(s="Sun Intensity", y=y[1], x=x[0]-2.5,
                  rotation=90, **font, ha='center')
     ax_edit.arrow(x[0], y[-1]+0.80, 3, 0, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
-    ax_edit.arrow(x[0]-1.9, y[-1], 0, -3, head_width=0.1, head_length=0.1,
+    ax_edit.arrow(x[0]-2.1, y[-1], 0, -3, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
 
     # Defining MA% coding of style -------------------------------------------
