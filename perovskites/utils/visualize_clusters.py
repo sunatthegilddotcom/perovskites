@@ -50,32 +50,33 @@ def visualize_clusters(ID_dict, img_per_group=10, color_map='gray'):
         size = len(ID_dict[i])
 
     # Need to deal with if the cluster group has less than img_per_group images
-    if size < img_per_group:
-        # Create indexed array
-        r = np.arange(size)
-        # Create so that when we plot the images
-        # nested for loop does not go outside of range
-        z = size
+        if size < img_per_group:
+            # Create indexed array
+            r = np.arange(size)
+            # Create so that when we plot the images
+            # nested for loop does not go outside of range
+            z = size
 
-    else:
-        # Pick img_per_group random image numbers, then sort
-        r = random.sample(range(size), img_per_group)
-        r.sort()
-        z = img_per_group
+        else:
+            # Pick img_per_group random image numbers, then sort
+            r = random.sample(range(size), img_per_group)
+            r.sort()
+            z = img_per_group
 
-    for j in range(z):
-        # Reshaping (32, 32, 1) into (32, 32) for easier plotting
-        img = ID_dict[i][r[j]].reshape(32, 32)
-        # User can select preferred cmap when calling the function
-        axes[i][j].imshow(img, cmap=color_map)
+        for j in range(z):
+            # Reshaping (32, 32, 1) into (32, 32) for easier plotting
+            img = ID_dict[i][r[j]].reshape(32, 32)
+            # User can select preferred cmap when calling the function
+            axes[i][j].imshow(img, cmap=color_map)
 
-    for k in range(z):
-        axes[i][k].plot([1.07, 0.0], [1.05, 1.05],
-                        transform=axes[i][k].transAxes,
-                        clip_on=False, linewidth=4,
-                        color='black')
-        axes[i][k].get_xaxis().set_visible(False)
-        axes[i][k].set_yticks([])
+        for k in range(z):
+            axes[i][k].plot([1.07, 0.0], [1.05, 1.05],
+                            transform=axes[i][k].transAxes,
+                            clip_on=False, linewidth=4,
+                            color='black')
+            axes[i][k].get_xaxis().set_visible(False)
+            axes[i][k].set_yticks([])
+            axes[i][k].grid(False)
 
     rows = ['Group {}'.format(row) for row in range(len(ID_dict))]
     for ax, row in zip(axes[:, 0], rows):
