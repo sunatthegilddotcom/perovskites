@@ -25,8 +25,25 @@ So encode the spatial information in the 2D PL images, we proposed two routes:
 1. **Using a Convolutional Neural Network to directly operate on time 0 2D PL images to predict the single values of log(Ld80)**
 2. **Using an autoencoder to encode the 2D spatial PL data into a 1D feature array, append it with other environmental features and feeding the augmented 1D feature array to a conventional regularized Linear regression model to predict the single values of log(Ld80)**
 
-##
+## `perovskites` package
 
+The perovskites package consists of various modules containing classes and wrapper functions that can effectively implement the routes we have proposed above. The current trr shows the major modules in the package.
+
+<pre><code>perovskites
+|___settings.json
+|___cnn.py
+|___linreg.py
+|___utils
+      |___image_loader.py
+      |___image_processing.py
+      |___autoencoder_to_encoder.py
+      |___regression_visualization.py
+      |___visualiza clusters.py
+</code></pre>
+
+Check out the [`examples`](examples/) directory for example notebooks which show how these modules can be put to use and also to visualize the spatial PL intensity data of perovskite thin films.
+
+## Use-case analysis
 
 ### Potential Users:
 * Other academic researchers in the thin-film PV community
@@ -44,14 +61,12 @@ So encode the spatial information in the 2D PL images, we proposed two routes:
 * Extract spatial PL features from images to be fed into a linear regression model for Ld80 prediction
 * Extract information for the PL images correlated to manufacturing processes
 
-### Instructions:
-* Check the [examples/](examples/) folder for introductory demonstrations on visualization, spatial analysis, etc.
+### Instructions for downloading the `perovskites/data/example.zip` file:
 * To use the data, first install [Git Large-File-Storage (LFS)](https://git-lfs.github.com). If you pull the repo and find that the `data/example.zip` is only of 1kB, try these two commands after `git pull origin main`- 
 ```
 git lfs fetch
 git lfs checkout
 ```
-
 * However, for properly implementing the autoencoder, access to the larger PL datainfrastructure is required. To get access contact one of the contributors such that we can grant permissions. This will be necessary for the PL data loader to function properly.
 * Utilize the .py files in the perovskites/utils folder to implement an array of different spatial analyzer tools (autoencoder, CNN, PCA, etc.).
 
@@ -59,6 +74,6 @@ git lfs checkout
 1. Early-time widefield absolute PL intensities and carrier diffusion length measurements can be used to predict the lifetime of perovskite thin films. But, this paper uses the mean pixel intensities of PL images, negleting the spatial heterogeneities [Stoddard et. al., ACS Energy Lett. 2020, 5, 3, 946–954](https://pubs.acs.org/doi/10.1021/acsenergylett.0c00164)
 2. Macroscopic PL heterogeneities encode hidden information about variation in thin film preparation conditions, storage and consequent surface defect concentrations [Tze-Bin Song et al 2019 J. Phys. Energy 1 011002](https://iopscience.iop.org/article/10.1088/2515-7655/aaeee5)
 
-### Datasets:
-Hillhouse Lab Group Dataset
+### Dataset courtesy:
+[Hillhouse Lab Group](https://sites.google.com/uw.edu/hillhouse/), University of Washington.
 
