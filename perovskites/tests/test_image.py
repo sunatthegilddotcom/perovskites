@@ -35,11 +35,9 @@ class test_image_processer(unittest.TestCase):
 
     def initial(self):
         tif_path = os.path.join(data_path, "sample_stack.tif")
-        img_arr = process.read_image(tif_path)
-        test_read_image(self, img_arr)
-        test_mean_over_depth(self, img_arr)
+        self.img_arr = process.read_image(tif_path)
 
-    def test_read_image(self, img_arr):
+    def test_read_image(self):
         """
         Tests if read_image() function properly transforms tif file into
         skimage processable numpy array.
@@ -47,7 +45,7 @@ class test_image_processer(unittest.TestCase):
         self.assertEqual(len(img_arr.shape), 3)
         self.assertEqual(img_arr.shape, (512, 512, 50))
 
-    def test_mean_over_depth(self, img_arr):
+    def test_mean_over_depth(self):
         """
         Tests if mean_over_depth() accurately calculates array mean based
         on the 3rd axis (time-depth)
