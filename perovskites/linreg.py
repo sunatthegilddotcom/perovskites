@@ -196,7 +196,7 @@ def linear_regressor(X_train, y_train,
             saved_models_folder = local_models_folder
 
         # If the model_folder is just the name of the model, not path
-        if not ('/' or '\\' in model_folder):
+        if not ('/' in model_folder or '\\' in model_folder):
             model_folder = os.path.join(saved_models_folder, model_folder)
 
         # Prompt new name input if another model exists with the same name
