@@ -17,7 +17,7 @@ Develop a python package that can extract hidden information from spatial hetero
 
 *Secondary:*
 * Through correlating features to film lifetime, determine how to manufacture an optimally stable thin-film
-* Extract spatial PL features from images to be fed into a linear regression model for Ld75 prediction
+* Extract spatial PL features from images to be fed into a linear regression model for Ld80 prediction
 * Extract information for the PL images correlated to manufacturing processes
 
 ### Instructions:
