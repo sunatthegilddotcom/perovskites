@@ -451,7 +451,7 @@ def style_coding(T=None, RH=None, Nsuns=None, MA=None,
 
     """
 
-    cmap_edge = mpl.cm.get_cmap('jet')
+    cmap_edge = mpl.cm.get_cmap('jet').reversed()
     cmap_fill = mpl.cm.get_cmap('Greys')
     norm = mpl.colors.Normalize(vmin=0, vmax=1)
 
