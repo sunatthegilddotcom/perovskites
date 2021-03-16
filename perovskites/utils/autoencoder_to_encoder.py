@@ -11,6 +11,8 @@ dataset = loader.PLDataLoader()
 
 rc = {'figure.figsize': (10, 5),
       'axes.facecolor': 'white',
+      'axes.grid': True,
+      'grid.color': '.8',
       'font.family': 'DejaVu Sans',
       'font.size': 15}
 plt.rcParams.update(rc)
