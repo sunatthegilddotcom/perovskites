@@ -101,7 +101,7 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     description1 = ''
     for scoring, scoring_label in zip(scoring_list, scoring_labels_list):
         score_val = score(y_train, y_train_pred, scoring=scoring)
-        description_row = 'train '+scoring_label+' = {.2f}%'.format(score_val)
+        description_row = 'train '+scoring_label+' = {0:.2f}%'.format(score_val)
         if count != 0:
             description_row = '\n'+description_row
         description1 += description_row
@@ -125,7 +125,7 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     description2 = ''
     for scoring, scoring_label in zip(scoring_list, scoring_labels_list):
         score_val = score(y_test, y_test_pred, scoring=scoring)
-        description_row = 'test '+scoring_label+' = {.2f}%'.format(score_val)
+        description_row = 'test '+scoring_label+' = {0:.2f}%'.format(score_val)
         if count != 0:
             description_row = '\n'+description_row
         description2 += description_row
