@@ -42,8 +42,8 @@ class test_image_processer(unittest.TestCase):
         Tests if read_image() function properly transforms tif file into
         skimage processable numpy array.
         """
-        self.assertEqual(len(img_arr.shape), 3)
-        self.assertEqual(img_arr.shape, (512, 512, 50))
+        self.assertEqual(len(self.img_arr.shape), 3)
+        self.assertEqual(self.img_arr.shape, (512, 512, 50))
 
     def test_mean_over_depth(self):
         """
@@ -56,7 +56,7 @@ class test_image_processer(unittest.TestCase):
         result1 = process.mean_over_depth(test1)
         result2 = process.mean_over_depth(test2)
         expected = np.array([[1., 2.], [3., 4.]])
-        size = len(process.mean_over_depth(img_arr)[0])
+        size = len(process.mean_over_depth(self.img_arr)[0])
         self.assertTrue(result1.any(), expected.any())
         self.assertTrue(result2.any(), test2.any())
         self.assertEqual(size, 512)
