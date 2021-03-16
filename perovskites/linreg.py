@@ -153,6 +153,7 @@ def linear_regressor(X_train, y_train,
                                     **alpha_tuning_params)
         best_alpha, alpha_tuning_scores, alpha_tuning_scoring = tuning_tuple
         reg.set_params(alpha=best_alpha)
+        print("The best regularization alpha: ", best_alpha, '\n-----\n')
 
     # Scale the data
     scaler = StandardScaler()
@@ -347,6 +348,7 @@ def alpha_tuning(X, y,
                          is available only to the 'Lasso' and 'Ridge' model\n\
                              types.")
     reg_fit = linear_model_selector(model_type)
+    k_fold_name = str(k_fold)
     if k_fold == 'leave_one_out':
         k_fold = len(y)
 
@@ -356,7 +358,8 @@ def alpha_tuning(X, y,
     if scoring not in ['r2', 'explained_variance', 'max_error']:
         scoring = 'neg_'+scoring
     if scoring not in sorted(metrics.SCORERS.keys()):
-        print(scoring, ' is not available in sklearn.metrics.')
+        print(scoring, " is not available in sklearn.metrics. Using\n\
+              'neg_mean_absolute_error' instead.\n")
         scoring = 'neg_mean_absolute_error'
     if k_fold == 1:
         scoring = scoring.partition('neg_')[-1]
@@ -395,6 +398,15 @@ def alpha_tuning(X, y,
             grand_score_list.extend(list(mean_scores_list))
 
         return best_alpha
+
+    print("------------------------------------------")
+    print("Regularization hyperparameter tuning by cv")
+    print("------------------------------------------")
+    print('No. of folds       : ', k_fold_name)
+    print('Maximum iterations : ', max_iter)
+    print('Tolerance          : {0:.2e}'.format(tol))
+    print('Model type         : ', model_type)
+    print('Scoring metric     : ', scoring, '\n')
 
     # Now, iterate over better resolutions of alpha list until the best alpha
     # is obtained.
