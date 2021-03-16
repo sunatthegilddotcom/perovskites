@@ -70,40 +70,16 @@ class test_image_processer(unittest.TestCase):
         expected = np.array([[[0.0, 0.25], [.75, 1.]]])
         self.assertTrue(result.any(), expected.any())
 
-    def test_crop_image(self):
-        """
-        Tests crop_image() function.
-        """
-
-    def test_get_channel(self):
-        """
-        Tests get_channel() function.
-        """
-
-    def test_resize_base_on_FOV(self):
-        """
-        Tests resize_based_on_FOV() function.
-        """
-
-    def test_img_as_feed(self):
-        """
-        Tests img_as_feed() function.
-        """
-
 
 class test_miscellaneous(unittest.TestCase):
 
     def test_booleanize(self):
         """
-        Tests booleanize() function.
+        Determines if booleanize() correctly converts boolean strings into
+        boolean types.
         """
-
-    def test_convert_to_long_path(self):
-        """
-        Tests convert_to_long_path() function.
-        """
-
-    def test_best_rowcol_split(self):
-        """
-        Tests best_rowcol_split() function.
-        """
+        test = {'a': 'True', 'b': 'False', 'c': 'true', 'd': 'false'}
+        result = misc.booleanize(test)
+        self.assertIsInstance(result, dict)
+        for key in result.keys():
+            self.assertIsInstance(result[key], bool)
