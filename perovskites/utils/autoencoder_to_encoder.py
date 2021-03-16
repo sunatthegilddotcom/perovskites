@@ -5,6 +5,8 @@ from scipy.cluster.vq import kmeans2, whiten
 from sklearn.decomposition import PCA
 import image_loader as loader
 import pickle
+import matplotlib.pyplot as plt
+
 MODEL_LOG_FOLDER = "drive/Shareddrives/Perovskites_DIRECT/models"
 dataset = loader.PLDataLoader()
 
@@ -92,7 +94,7 @@ class autoencoder:
                                  '/autoencoder_model/' +
                                  self.h5_name)
         encoder.save_weights(file_path + '/encoder_model/' + self.h5_name)
-
+        plt.plot(autoencoder.history['accuracy'])
         return autoencoder, encoder
 
     def core_autoencoder_fxn(self,
