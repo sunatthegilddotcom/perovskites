@@ -114,7 +114,8 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
         description1 += description_row
         count += 1
 
-    handle1 = ax.scatter(np.max(grand_y), np.min(grand_y_pred), color='w', s=1)
+    handle1 = ax.scatter(np.max(grand_y), np.min(grand_y_pred),
+                         color=np.array(['w',]), s=1)
     handles = [handle1]
     labels = [description1]
 
@@ -548,7 +549,7 @@ def style_coding(T=None, RH=None, Nsuns=None, MA=None,
     dict_list = []
     for i in range(len(T)):
         dict_list += [{
-                    'c': c[i],
+                    'color': [c[i],],
                     's': s[i],
                     'linewidths': linewidth[i],
                     'edgecolors': edgecolor[i],
