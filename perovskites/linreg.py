@@ -241,7 +241,8 @@ def linear_model_selector(model_type):
     return reg_fit
 
 
-def score(y_true, y_pred, scoring='mean_absolute_percentage_error'):
+def score(y_true, y_pred, scoring='mean_absolute_percentage_error',
+          always_return=True):
     """
     Returns the error score using the sklearn's list of error metrics. Note
     that the scoring string must be one of the available errors in sklearn.
@@ -257,13 +258,30 @@ def score(y_true, y_pred, scoring='mean_absolute_percentage_error'):
         Predicted y values
     scoring : str, optional
         The scoring to return. The default is 'mean_absolute_percentage_error'.
+    always_return : bool, optional
+        Set this to True if you want the function to return the mean
+        absolute percentage error if the specified error is not available
+        in the scikit version of yours.
 
     Returns
     -----------
     float
         The required score value
     """
-    error = eval('metrics.'+scoring+'(y_true, y_pred)')
+    try:
+        error = eval('metrics.'+scoring+'(y_true, y_pred)')
+    except AttributeError:
+        # Because some errors are not available
+        # in older versions
+        if always_return:
+            print("This scoring metric is not available. Returning the\n\
+                  mean absolute percentage error instead...\n")
+            denominator = np.maximum(1e-10, y_true)
+            error = np.sum(np.divide(np.abs(y_true-y_pred), denominator))
+            error /= len(y_true)
+        else:
+            raise Exception("This scoring metric is not available.")
+            
     return error
 
 

@@ -83,7 +83,8 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     arg_vals = STYLE_VARIABLES.copy()
     arg_vals[arg_vals.index('soakSuns')] = 'Nsuns'
 
-    grand_y = np.concat([y_train, y_test, y_test, y_test_pred])
+    grand_y = np.concatenate([y_train.flatten(), y_test.flatten(),
+                              y_test.flatten(), y_test_pred.flatten()])
     # Create a styling for the train data ------------------------------------
     style_dict = {}
     for key, key_df in zip(arg_vals, STYLE_VARIABLES):
@@ -514,14 +515,14 @@ def style_coding(T=None, RH=None, Nsuns=None, MA=None,
 
     if not (gas is None):
         if gas_type == 'N2':
-            air_ind = np.logical_and(gas < 80, gas > 70)
-            N2_ind = (gas == 100)
-            O2_ind = (gas == 0)
+            air_ind = np.logical_and(gas <= 80, gas >= 70)
+            N2_ind = (gas > 80)
+            O2_ind = (gas < 70)
 
         elif gas_type == 'O2':
-            air_ind = np.logical_and(gas < 30, gas > 20)
-            N2_ind = (gas == 0)
-            O2_ind = (gas == 100)
+            air_ind = np.logical_and(gas <= 30, gas >= 20)
+            N2_ind = (gas < 20)
+            O2_ind = (gas > 30)
 
         gas = gas.astype('<U1')
         gas[air_ind] = 'o'  # air
@@ -543,6 +544,3 @@ def style_coding(T=None, RH=None, Nsuns=None, MA=None,
 
     return dict_list
 
-
-
-    
