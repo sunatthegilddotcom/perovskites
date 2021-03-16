@@ -86,17 +86,17 @@ class autoencoder:
         decoded = layers.Conv2D(1, (2, 2),
                                 activation='sigmoid', padding='same')(x)
 
-        autoencoder = tf.keras.Model(input_img, decoded)
-        autoencoder.compile(optimizer=optimizer, loss='binary_crossentropy')
-        autoencoder.summary()
-        history = autoencoder.fit(train_X,
+        decoder = tf.keras.Model(input_img, decoded)
+        decoder.compile(optimizer=optimizer, loss='binary_crossentropy')
+        decoder.summary()
+        history = decoder.fit(train_X,
                         train_X,
                         epochs=epochs,
                         batch_size=batch_size,
                         validation_data=(valid_X, valid_X))
 
         encoder = tf.keras.Model(input_img, encoded)
-        autoencoder.save_weights(file_path +
+        decoder.save_weights(file_path +
                                  '/autoencoder_model/' +
                                  self.h5_name)
         encoder.save_weights(file_path + '/encoder_model/' + self.h5_name)
@@ -107,7 +107,7 @@ class autoencoder:
         plt.xlabel('Epoch Number')
         plt.ylabel('Loss [Binary Crossentropy]')
         plt.savefig(file_path + '/encoder_model/loss_graph.png')
-        return autoencoder, encoder
+        return decoder, encoder
 
     def core_autoencoder_fxn(self,
                              epochs=100,
