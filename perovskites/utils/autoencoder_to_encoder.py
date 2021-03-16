@@ -94,7 +94,7 @@ class autoencoder:
                                  '/autoencoder_model/' +
                                  self.h5_name)
         encoder.save_weights(file_path + '/encoder_model/' + self.h5_name)
-        plt.plot(autoencoder.history['accuracy'])
+
         return autoencoder, encoder
 
     def core_autoencoder_fxn(self,
