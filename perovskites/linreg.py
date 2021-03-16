@@ -353,9 +353,13 @@ def alpha_tuning(X, y,
     grand_alpha_list = []
     grand_score_list = []
     # Check if a valid scoring string is passed
+    if scoring not in ['r2', 'explained_variance', 'max_error']:
+        scoring = 'neg_'+scoring
     if scoring not in sorted(metrics.SCORERS.keys()):
         print(scoring, ' is not available in sklearn.metrics.')
-        scoring = 'mean_absolute_error'
+        scoring = 'neg_mean_absolute_error'
+    if k_fold == 1:
+        scoring = scoring.partition('neg_')[-1]
 
     def scan_alpha_vals(reg_fit, alpha_list):
         # Get the best alpha over the entire X
