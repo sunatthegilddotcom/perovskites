@@ -70,13 +70,12 @@ def visualize_clusters(ID_dict, img_per_group=10, color_map='gray'):
             axes[i][j].imshow(img, cmap=color_map)
 
         for k in range(z):
-            axes[i][k].plot([1.12, 0.0], [1.05, 1.05],
+            axes[i][k].plot([1.35, 0.0], [1.05, 1.05],
                             transform=axes[i][k].transAxes,
                             clip_on=False, linewidth=4,
                             color='black')
             axes[i][k].get_xaxis().set_visible(False)
             axes[i][k].set_yticks([])
-            axes[i][k].grid(False)
 
     rows = ['Group {}'.format(row) for row in range(len(ID_dict))]
     for ax, row in zip(axes[:, 0], rows):
