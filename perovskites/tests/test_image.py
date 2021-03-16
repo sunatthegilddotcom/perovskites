@@ -14,6 +14,7 @@ tif_path = os.path.join(data_path, "sample_stack.tif")
 IMG = process.read_image(tif_path)
 DATA = loader._get_data_from_pickle(sample_path)
 
+
 class test_image_loader(unittest.TestCase):
 
     def test_sample(self):
@@ -31,7 +32,8 @@ class test_image_loader(unittest.TestCase):
         loader._create_data_pickle(DATA, pickle_path)
         data2 = loader._get_data_from_pickle(pickle_path)
         for i in range(len(DATA)):
-          self.assertTrue(DATA[i].any() == data2[i].any())
+            self.assertTrue(DATA[i].any() == data2[i].any())
+
 
 class test_image_processer(unittest.TestCase):
 
@@ -48,8 +50,7 @@ class test_image_processer(unittest.TestCase):
         Tests if mean_over_depth() accurately calculates array mean based
         on the 3rd axis (time-depth)
         """
-        test1 = np.array([[[1, 1, 1],[2, 2, 2]],
-                        [[3, 3, 3],[4, 4, 4]]])
+        test1 = np.array([[[1, 1, 1], [2, 2, 2]], [[3, 3, 3], [4, 4, 4]]])
         test2 = np.array([[1, 2], [3, 4]])
         result1 = process.mean_over_depth(test1)
         result2 = process.mean_over_depth(test2)
@@ -61,8 +62,13 @@ class test_image_processer(unittest.TestCase):
 
     def test_normalize(self):
         """
-        Tests normalize() function.
+        Tests if normalize() function correctly adjusts pixel values
+        between 0 & 1 (white & black) for a given numpy array.
         """
+        test = np.array([[0, 1], [3, 4]])
+        result = process.normalize(test)
+        expected = np.array([[[0.0, 0.25], [.75, 1.]]])
+        self.assertTrue(result.any(), expected.any())
 
     def test_crop_image(self):
         """
