@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import cv2
 import warnings
+
+warnings.filterwarnings("ignore")
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # DEFAULT MIN-MAX VALUES for ENVIRONMENTAL CONDITIONS
@@ -112,7 +114,7 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
         description1 += description_row
         count += 1
 
-    handle1 = ax.scatter(np.max(grand_y), np.min(grand_y_pred), c='w', s=1)
+    handle1 = ax.scatter(np.max(grand_y), np.min(grand_y_pred), color='w', s=1)
     handles = [handle1]
     labels = [description1]
 
@@ -124,7 +126,7 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
                         'edgecolor': 'y',
                         'linewidth': 1.5,
                     }
-    handle2 = ax.scatter(y_test, y_test_pred, zorder=len(y_train)+1,
+    handle2 = ax.scatter(y_test, y_test_pred, zorder=0,
                          **test_style_dict)
 
     # Preparing the legend string
@@ -189,7 +191,7 @@ def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
 
     handle = ax.scatter(bar_x[-1],
                         np.max(np.abs(coeff_values)),
-                        c='w', s=1)
+                        color='w', s=1)
     return handle
 
 
@@ -213,10 +215,10 @@ def train_validation_error(ax, history_csv, loss_metric):
     """
     epochs = np.arange(len(history_csv))
     ax.plot(np.arange(epochs), history_csv['loss'], 'o-',
-            c='dodgerblue',
+            color='dodgerblue',
             label='Training loss')
     ax.plot(np.arange(epochs), history_csv['val_loss'], 'o-',
-            c='brown',
+            color='brown',
             label='Validation loss')
     ax.set_xlabel("epoch", **default_font)
     ax.set_ylabel(loss_metric, **default_font)
@@ -349,7 +351,9 @@ def default_style_legend(ax=None, save_path=None, dpi=100, font=default_font):
                             sep='')
         img = img.reshape(fig.canvas.get_width_height()[::-1]+(3,))
         img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+        ax.axis('off')
         ax.imshow(img)
+        plt.close(fig)
 
 
 def parity_plot(ax, Y_true, Y_pred, y_label, style_args=[]):
@@ -394,7 +398,7 @@ def parity_plot(ax, Y_true, Y_pred, y_label, style_args=[]):
             alpha=0.75
             )
 
-    alpha = 0.85
+    alpha = 0.6
     if len(style_args) == 0:
         handle = ax.scatter(Y_true, Y_pred, alpha=alpha)
     else:
