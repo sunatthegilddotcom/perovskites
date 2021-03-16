@@ -552,7 +552,7 @@ class CNNPredictor:
         None.
 
         """
-        reg_vis.default_style_legend(ax=ax, save_path=save_path, dpi=dpi)
+        reg_vis.parity_legend(ax=ax, save_path=save_path, dpi=dpi)
 
 
 ##############################################################################

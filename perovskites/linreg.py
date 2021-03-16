@@ -180,7 +180,7 @@ def linear_regressor(X_train, y_train,
     fit_results['alpha_tuning_params'] = alpha_tuning_params
     fit_results['alpha_tuning_scores'] = alpha_tuning_scores
     fit_results['alpha_tuning_scoring'] = alpha_tuning_scoring
-    fit_results['model'] = reg
+    fit_results['fit'] = reg
     fit_results['scaler'] = scaler
 
     if model_folder is not None:
@@ -211,6 +211,7 @@ def linear_regressor(X_train, y_train,
         fit_pickle_path = os.path.join(model_folder, fit_pickle_name)
         with open(fit_pickle_path, 'wb') as file:
             pickle.dump(fit_results, file)
+        print("Model saved as dict in ", fit_pickle_path)
 
     return fit_results
 
@@ -361,6 +362,9 @@ def alpha_tuning(X, y,
 
     grand_alpha_list = []
     grand_score_list = []
+    alpha_list_min = alpha_list.min()
+    alpha_list_max = alpha_list.max()
+
     # Check if a valid scoring string is passed
     if scoring not in ['r2', 'explained_variance', 'max_error']:
         scoring = 'neg_'+scoring
@@ -409,8 +413,8 @@ def alpha_tuning(X, y,
     print("------------------------------------------")
     print("Regularization hyperparameter tuning by cv")
     print("------------------------------------------")
-    print('alpha range        :  ({0:.2e}, {0:.2e})'.format(alpha_list.min(),
-                                                            alpha_list.max()))
+    print('alpha range        :  ({0:.2e}, {0:.2e})'.format(alpha_list_min,
+                                                            alpha_list_max))
     print('No. of folds       : ', k_fold_name)
     print('Maximum iterations : ', max_iter)
     print('Tolerance          :  {0:.2e}'.format(tol))

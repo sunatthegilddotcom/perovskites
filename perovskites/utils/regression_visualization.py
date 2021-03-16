@@ -143,7 +143,7 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     handles += [handle2]
     labels += [description2]
 
-    ax.legend(handles, labels, loc=1)
+    ax.legend(handles, labels, loc=1, **default_font)
 
 
 def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
