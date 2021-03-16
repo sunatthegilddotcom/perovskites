@@ -11,7 +11,7 @@ Develop a python package that can extract hidden information from spatial hetero
 
 ### Use Cases:
 *Primary:*
-* Predict lifetime of a perovskite (Ld75) for a perovskite based on early timeseries (spatial AIPL) data
+* Predict lifetime of a perovskite (Ld80) for a perovskite based on early timeseries (spatial AIPL) data
 * Enchance the rate of testing for thin-film PV
 * Check for correlation between PL and diffusion length in perovskites
 
@@ -21,14 +21,15 @@ Develop a python package that can extract hidden information from spatial hetero
 * Extract information for the PL images correlated to manufacturing processes
 
 ### Instructions:
-* Check the [notebooks/visualize_PL_data.ipynb](notebooks/visualize_PL_data.ipynb) notebook.
-* To use the data, first install [Git Large-File-Storage (LFS)](https://git-lfs.github.com). When you pull the repo and find that the `data/example.zip` is only of 1kB, try these two commands after `git pull origin main`- 
+* Check the [examples/](examples/) folder for introductory demonstrations on visualization, spatial analysis, etc.
+* To use the data, first install [Git Large-File-Storage (LFS)](https://git-lfs.github.com). If you pull the repo and find that the `data/example.zip` is only of 1kB, try these two commands after `git pull origin main`- 
 ```
 git lfs fetch
 git lfs checkout
 ```
 
-* Currently, the plan is to use a shared Google Drive to store all data and use it in the model. Also, we must make sure that the data is openly available to everyone once the repo is made public.
+* However, for properly implementing the autoencoder, access to the larger PL datainfrastructure is required. To get access contact one of the contributors such that we can grant permissions. This will be necessary for the PL data loader to function properly.
+* Utilize the .py files in the perovskites/utils folder to implement an array of different spatial analyzer tools (autoencoder, CNN, PCA, etc.).
 
 ### References
 1. Early-time widefield absolute PL intensities and carrier diffusion length measurements can be used to predict the lifetime of perovskite thin films. But, this paper uses the mean pixel intensities of PL images, negleting the spatial heterogeneities [Stoddard et. al., ACS Energy Lett. 2020, 5, 3, 946–954](https://pubs.acs.org/doi/10.1021/acsenergylett.0c00164)
@@ -36,6 +37,4 @@ git lfs checkout
 
 ### Datasets:
 Hillhouse Lab Group Dataset
-
-
 
