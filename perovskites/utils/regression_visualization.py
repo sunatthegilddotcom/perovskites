@@ -277,7 +277,7 @@ def parity_legend(ax=None, save_path=None, dpi=100, font=default_font):
     for i in range(len(xlabels)):
         ax_edit.text(s=xlabels[i], x=x[i], y=y[-1]+0.35, **font, ha='center')
     for i in range(len(ylabels)):
-        ax_edit.text(s=ylabels[i], x=x[0]-1.28, y=y[::-1][i],
+        ax_edit.text(s=ylabels[i], x=x[0]-1.2, y=y[::-1][i],
                      **font, va='center', ha='center')
 
     ax_edit.text(s="Relative Humidity", x=0.5*(x[1]+x[2]), y=y[-1]+1,
@@ -286,7 +286,7 @@ def parity_legend(ax=None, save_path=None, dpi=100, font=default_font):
                  rotation=90, **font, ha='center')
     ax_edit.arrow(x[0], y[-1]+0.80, 3, 0, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
-    ax_edit.arrow(x[0]-1.95, y[-1], 0, -3, head_width=0.1, head_length=0.1,
+    ax_edit.arrow(x[0]-1.92, y[-1], 0, -3, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
 
     # Defining MA% coding of style -------------------------------------------

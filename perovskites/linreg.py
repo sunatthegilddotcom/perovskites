@@ -288,7 +288,7 @@ def score(y_true, y_pred, scoring='mean_absolute_percentage_error',
             print("This scoring metric is not available. Returning the\n\
                   mean absolute percentage error instead...\n")
             denominator = np.maximum(1e-10, y_true)
-            error = np.mean(np.divide(np.abs(y_true-y_pred), denominator))
+            error = np.mean(np.divide(np.abs(y_true-y_pred), denominator))*100
         else:
             raise Exception("This scoring metric is not available.")
 
