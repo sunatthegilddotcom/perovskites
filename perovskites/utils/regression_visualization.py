@@ -189,7 +189,7 @@ def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
     ax.set_xticks(bar_x)
     ax.set_xticklabels(feat_labels, horizontalalignment='right',
                        fontsize=int(default_font['fontsize']*0.8))
-    ax.tick_params(axis='x', labelrotation=45)
+    ax.tick_params(axis='x', labelrotation=75)
     ax.bar(bar_x, np.abs(coeff_values), color=sign_colors)
 
     handle = ax.scatter(bar_x[-1],
@@ -282,11 +282,11 @@ def parity_legend(ax=None, save_path=None, dpi=100, font=default_font):
 
     ax_edit.text(s="Relative Humidity", x=0.5*(x[1]+x[2]), y=y[-1]+1,
                  **font, ha='center')
-    ax_edit.text(s="Sun Intensity", y=y[1], x=x[0]-2.0,
+    ax_edit.text(s="Sun Intensity", y=y[1], x=x[0]-2.2,
                  rotation=90, **font, ha='center')
     ax_edit.arrow(x[0], y[-1]+0.80, 3, 0, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
-    ax_edit.arrow(x[0]-1.96, y[-1], 0, -3, head_width=0.1, head_length=0.1,
+    ax_edit.arrow(x[0]-1.98, y[-1], 0, -3, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
 
     # Defining MA% coding of style -------------------------------------------
