@@ -41,7 +41,8 @@ The perovskites package consists of various modules containing classes and wrapp
       |___visualiza clusters.py
 </code></pre>
 
-Check out the [`examples`](examples/) directory for example notebooks which show how these modules can be put to use and also to visualize the spatial PL intensity data of perovskite thin films.
+* Check out the [`examples`](examples/) directory for example notebooks which show how these modules can be put to use and also to visualize the spatial PL intensity data of perovskite thin films.
+* Check out this [notebook](examples/presentation_notebook.ipynb) where all the modules have been put to use for demonstration.
 
 ## Use-case analysis
 
