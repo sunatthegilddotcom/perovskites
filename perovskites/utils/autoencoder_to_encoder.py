@@ -291,9 +291,34 @@ class autoencoder:
             pickle.dump(autoencoder_output_noPCA, f)
         return autoencoder_output_noPCA
     
-    def build_autoencoder(self, epochs=100, 
+    def build_autoencoder(self, epochs=100,
                           batch_size=150,
                           optimizer='adam'):
+        '''
+        This builds a blank encoded and decoded model that can
+        subsequently be used to load a model with keras (that has
+        already been trained.)
+        
+        Parameters
+        -------------------
+        epochs: int
+            Number of epochs that you desire your function to run
+        batch_size: int
+            Number of images per batch ran through your epoch
+        optimizer:
+            What optimizer fuction the autoencodre uses to train the model
+
+        Returns
+        -------------------
+        decoder:
+            Model class -- blank decoded model with correct shape
+
+        encoder:
+            Model class -- blank encoded model with correct shape
+
+        '''
+
+        
         input_img = tf.keras.Input(shape=(32, 32, 1))
         stride = (3,3) # Change stride
 
