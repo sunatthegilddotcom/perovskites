@@ -9,6 +9,13 @@ import matplotlib.pyplot as plt
 MODEL_LOG_FOLDER = "drive/Shareddrives/Perovskites_DIRECT/models"
 dataset = loader.PLDataLoader()
 
+rc = {'figure.figsize':(10,5),
+      'axes.facecolor':'white',
+      'axes.grid' : True,
+      'grid.color': '.8',
+      'font.family':'DejaVu Sans',
+      'font.size' : 15}
+plt.rcParams.update(rc)
 
 class autoencoder:
     def __init__(self, data=dataset, h5_name='Autoencoder.h5'):
@@ -82,7 +89,7 @@ class autoencoder:
         autoencoder = tf.keras.Model(input_img, decoded)
         autoencoder.compile(optimizer=optimizer, loss='binary_crossentropy')
         autoencoder.summary()
-        autoencoder.fit(train_X,
+        history = autoencoder.fit(train_X,
                         train_X,
                         epochs=epochs,
                         batch_size=batch_size,
@@ -94,8 +101,12 @@ class autoencoder:
                                  self.h5_name)
         encoder.save_weights(file_path + '/encoder_model/' + self.h5_name)
         
-        plt.plot(autoencoder.history['accuracy'])
-        plt.plot(autoencoder.history['val_accuracy'])
+        plt.plot(history.history['loss'], label='Train Loss')
+        plt.plot(history.history['val_loss'], label='Validation Loss')
+        plt.title('Loss as a function of Epochs')
+        plt.xlabel('Epoch Number')
+        plt.ylabel('Loss [Binary Crossentropy]')
+        savefig(file_path + '/encoder_model/loss_graph.png')
         return autoencoder, encoder
 
     def core_autoencoder_fxn(self,
