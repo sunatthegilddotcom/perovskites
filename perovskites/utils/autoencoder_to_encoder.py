@@ -106,7 +106,7 @@ class autoencoder:
         plt.title('Loss as a function of Epochs')
         plt.xlabel('Epoch Number')
         plt.ylabel('Loss [Binary Crossentropy]')
-        savefig(file_path + '/encoder_model/loss_graph.png')
+        plt.savefig(file_path + '/encoder_model/loss_graph.png')
         return autoencoder, encoder
 
     def core_autoencoder_fxn(self,
