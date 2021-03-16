@@ -10,6 +10,8 @@ curr_dir = os.path.dirname(__file__)
 parent_dir = os.path.dirname(curr_dir)
 data_path = os.path.join(parent_dir, 'data')
 sample_path = os.path.join(data_path, 'sample_data.pickle')
+tif_path = os.path.join(data_path, "sample_stack.tif")
+IMG = process.read_image(tif_path)
 DATA = loader._get_data_from_pickle(sample_path)
 
 class test_image_loader(unittest.TestCase):
@@ -33,21 +35,15 @@ class test_image_loader(unittest.TestCase):
 
 class test_image_processer(unittest.TestCase):
 
-    def initial(self):
-        tif_path = os.path.join(data_path, "sample_stack.tif")
-        img_arr = process.read_image(tif_path)
-        test_read_image(self, img_arr)
-        test_mean_over_depth(self, img_arr)
-
-    def test_read_image(self, img_arr):
+    def test_read_image(self):
         """
         Tests if read_image() function properly transforms tif file into
         skimage processable numpy array.
         """
-        self.assertEqual(len(img_arr.shape), 3)
-        self.assertEqual(img_arr.shape, (512, 512, 50))
+        self.assertEqual(len(IMG.shape), 3)
+        self.assertEqual(IMG.shape, (512, 512, 50))
 
-    def test_mean_over_depth(self, img_arr):
+    def test_mean_over_depth(self):
         """
         Tests if mean_over_depth() accurately calculates array mean based
         on the 3rd axis (time-depth)
@@ -58,7 +54,7 @@ class test_image_processer(unittest.TestCase):
         result1 = process.mean_over_depth(test1)
         result2 = process.mean_over_depth(test2)
         expected = np.array([[1., 2.], [3., 4.]])
-        size = len(process.mean_over_depth(img_arr)[0])
+        size = len(process.mean_over_depth(IMG)[0])
         self.assertTrue(result1.any(), expected.any())
         self.assertTrue(result2.any(), test2.any())
         self.assertEqual(size, 512)
