@@ -151,6 +151,9 @@ def linear_regressor(X_train, y_train,
     reg = linear_model_selector(model_type)
 
     # Get the best regularization parameter by cross-validation
+    alpha_tuning_scores = None
+    best_alpha = None
+    alpha_tuning_scoring = None
     if model_type == 'Lasso' or model_type == 'Ridge':
         tuning_tuple = alpha_tuning(X_train, y_train,
                                     **alpha_tuning_params)
@@ -177,6 +180,7 @@ def linear_regressor(X_train, y_train,
     fit_results['y_test'] = y_test
     fit_results['feat_labels'] = feat_labels,
     fit_results['y_label'] = y_label
+    fit_results['alpha'] = best_alpha
     fit_results['alpha_tuning_params'] = alpha_tuning_params
     fit_results['alpha_tuning_scores'] = alpha_tuning_scores
     fit_results['alpha_tuning_scoring'] = alpha_tuning_scoring
