@@ -153,7 +153,9 @@ def linear_regressor(X_train, y_train,
                                     **alpha_tuning_params)
         best_alpha, alpha_tuning_scores, alpha_tuning_scoring = tuning_tuple
         reg.set_params(alpha=best_alpha)
-        print("The best regularization alpha: ", best_alpha, '\n-----\n')
+        print("------------------------------------------")
+        print("The best regularization alpha: ", best_alpha)
+        print("------------------------------------------\n")
 
     # Scale the data
     scaler = StandardScaler()
@@ -162,6 +164,8 @@ def linear_regressor(X_train, y_train,
 
     # Fit the model
     fit_results = {}
+
+    print('Fitting ', model_type, ' model on traning dataset...\n')
     reg.fit(X_train_fit, y_train)
     fit_results['model_type'] = model_type
     fit_results['X_train'] = X_train_fit
@@ -201,6 +205,9 @@ def linear_regressor(X_train, y_train,
                 model_folder = os.path.join(saved_models_folder, model_folder)
 
         os.makedirs(model_folder, exist_ok=True)
+        print("***************88")
+        print(model_folder)
+        print(mama)
         fit_pickle_path = os.path.join(model_folder, fit_pickle_name)
         with open(fit_pickle_path, 'wb') as file:
             pickle.dump(fit_results, file)
@@ -402,9 +409,11 @@ def alpha_tuning(X, y,
     print("------------------------------------------")
     print("Regularization hyperparameter tuning by cv")
     print("------------------------------------------")
+    print('alpha range        :  ({.2f}, {.2f})'.format(alpha_list.min(),
+                                                        alpha_list.max()))
     print('No. of folds       : ', k_fold_name)
     print('Maximum iterations : ', max_iter)
-    print('Tolerance          : {0:.2e}'.format(tol))
+    print('Tolerance          :  {0:.2e}'.format(tol))
     print('Model type         : ', model_type)
     print('Scoring metric     : ', scoring, '\n')
 
