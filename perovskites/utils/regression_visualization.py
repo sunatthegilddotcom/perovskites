@@ -85,8 +85,11 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     arg_vals = STYLE_VARIABLES.copy()
     arg_vals[arg_vals.index('soakSuns')] = 'Nsuns'
 
-    grand_y = np.concatenate([y_train.flatten(), y_test.flatten(),
-                              y_test.flatten(), y_test_pred.flatten()])
+    # Grand y arrays containing both test and train
+    grand_y = np.concatenate([y_train.flatten(), y_test.flatten()])
+    grand_y_pred = np.concatenate([y_train_pred.flatten(),
+                                   y_test_pred.flatten()])
+
     # Create a styling for the train data ------------------------------------
     style_dict = {}
     for key, key_df in zip(arg_vals, STYLE_VARIABLES):
@@ -97,17 +100,19 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     parity_plot(ax, y_train, y_train_pred, y_label,
                 style_args=train_style_args)
 
+    # Preparing the legend string
     count = 0
     description1 = ''
     for scoring, scoring_label in zip(scoring_list, scoring_labels_list):
         score_val = score(y_train, y_train_pred, scoring=scoring)
-        description_row = 'train '+scoring_label+' = {0:.2f}%'.format(score_val)
+        description_row = 'train '+scoring_label
+        description_row += ' = {0:.2f}%'.format(score_val)
         if count != 0:
             description_row = '\n'+description_row
         description1 += description_row
         count += 1
 
-    handle1 = ax.scatter(np.max(grand_y), c='w', s=1)
+    handle1 = ax.scatter(np.max(grand_y), np.min(grand_y_pred), c='w', s=1)
     handles = [handle1]
     labels = [description1]
 
@@ -121,6 +126,8 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
                     }
     handle2 = ax.scatter(y_test, y_test_pred, zorder=len(y_train)+1,
                          **test_style_dict)
+
+    # Preparing the legend string
     count = 0
     description2 = ''
     for scoring, scoring_label in zip(scoring_list, scoring_labels_list):
@@ -545,4 +552,3 @@ def style_coding(T=None, RH=None, Nsuns=None, MA=None,
         }]
 
     return dict_list
-
