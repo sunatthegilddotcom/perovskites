@@ -149,8 +149,9 @@ def linear_regressor(X_train, y_train,
 
     # Get the best regularization parameter by cross-validation
     if model_type == 'Lasso' or model_type == 'Ridge':
-        best_alpha, alpha_tuning_scores = alpha_tuning(X_train, y_train,
-                                                       **alpha_tuning_params)
+        tuning_tuple = alpha_tuning(X_train, y_train,
+                                    **alpha_tuning_params)
+        best_alpha, alpha_tuning_scores, alpha_tuning_scoring = tuning_tuple
         reg.set_params(alpha=best_alpha)
 
     # Scale the data
@@ -170,6 +171,7 @@ def linear_regressor(X_train, y_train,
     fit_results['y_label'] = y_label
     fit_results['alpha_tuning_params'] = alpha_tuning_params
     fit_results['alpha_tuning_scores'] = alpha_tuning_scores
+    fit_results['alpha_tuning_scoring'] = alpha_tuning_scoring
     fit_results['model'] = reg
     fit_results['scaler'] = scaler
 
@@ -277,11 +279,10 @@ def score(y_true, y_pred, scoring='mean_absolute_percentage_error',
             print("This scoring metric is not available. Returning the\n\
                   mean absolute percentage error instead...\n")
             denominator = np.maximum(1e-10, y_true)
-            error = np.sum(np.divide(np.abs(y_true-y_pred), denominator))
-            error /= len(y_true)
+            error = np.mean(np.divide(np.abs(y_true-y_pred), denominator))
         else:
             raise Exception("This scoring metric is not available.")
-            
+
     return error
 
 
@@ -337,6 +338,8 @@ def alpha_tuning(X, y,
     grid_search_results : dict
         The dictionary with two keys - 'alpha' and 'score' containing
         arrays of alpha values and correponding scores.
+    scoring : str
+        The scoring metric used for tuning
 
     """
     if model_type != 'Lasso' and model_type != 'Ridge':
@@ -349,6 +352,10 @@ def alpha_tuning(X, y,
 
     grand_alpha_list = []
     grand_score_list = []
+    # Check if a valid scoring string is passed
+    if scoring not in sorted(metrics.SCORERS.keys()):
+        print(scoring, ' is not available in sklearn.metrics.')
+        scoring = 'mean_absolute_error'
 
     def scan_alpha_vals(reg_fit, alpha_list):
         # Get the best alpha over the entire X
@@ -371,13 +378,9 @@ def alpha_tuning(X, y,
         # other use the k_fold number of splits for tuning with
         # validatoin error
         else:
-            # The negative error score is maximized in GridSearch()
-            neutral_error_list = ['r2', 'max_error', 'explained_variance']
-            if scoring != neutral_error_list:
-                scoring_name = 'neg_' + scoring
             grid = GridSearchCV(estimator=reg_fit,
                                 param_grid={'alpha': alpha_list},
-                                scoring=scoring_name,
+                                scoring=scoring,
                                 cv=k_fold,
                                 verbose=1)
             grid.fit(X, y)
@@ -407,5 +410,7 @@ def alpha_tuning(X, y,
     grand_alpha_list, unique_inds = np.unique(grand_alpha_list,
                                               return_index=True)
     grand_score_list = np.abs(np.array(grand_score_list)[unique_inds])
-
-    return best_alpha, dict(alpha=grand_alpha_list, score=grand_score_list)
+    return_tuple = (best_alpha,
+                    dict(alpha=grand_alpha_list, score=grand_score_list),
+                    scoring)
+    return return_tuple

@@ -277,7 +277,7 @@ def default_style_legend(ax=None, save_path=None, dpi=100, font=default_font):
     for i in range(len(xlabels)):
         ax_edit.text(s=xlabels[i], x=x[i], y=y[-1]+0.35, **font, ha='center')
     for i in range(len(ylabels)):
-        ax_edit.text(s=ylabels[i], x=x[0]-1.45, y=y[::-1][i],
+        ax_edit.text(s=ylabels[i], x=x[0]-1.55, y=y[::-1][i],
                      **font, va='center')
 
     ax_edit.text(s="Relative Humidity", x=0.5*(x[0]+x[1]), y=y[-1]+1, **font)
@@ -551,7 +551,7 @@ def style_coding(T=None, RH=None, Nsuns=None, MA=None,
     dict_list = []
     for i in range(len(T)):
         dict_list += [{
-                    'color': [c[i],],
+                    'color': [c[i], ],
                     's': s[i],
                     'linewidths': linewidth[i],
                     'edgecolors': edgecolor[i],
