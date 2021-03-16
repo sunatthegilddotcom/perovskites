@@ -18,7 +18,7 @@ NSUNS_RANGE = np.array([1, 32])
 REL_HUM_RANGE = np.array([0, 60])
 TEMP_RANGE = np.array([25, 85])
 MA_RANGE = np.array([0, 1])
-STYLE_VARIABLES = ['T', 'RH', 'soakSuns', 'MA', 'O2', 'N2']
+STYLE_VARIABLES = ['T', 'RH', 'soakSuns', 'MA', 'O2']
 
 # default font
 default_font = {'color': 'k',
@@ -115,7 +115,7 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
         count += 1
 
     handle1 = ax.scatter(np.max(grand_y), np.min(grand_y_pred),
-                         color=np.array(['w',]), s=1)
+                         color=np.array(['w', ]), s=1)
     handles = [handle1]
     labels = [description1]
 
@@ -228,7 +228,7 @@ def train_validation_error(ax, history_csv, loss_metric):
     ax.legend(fontsize=int(default_font['fontsize']*0.8))
 
 
-def default_style_legend(ax=None, save_path=None, dpi=100, font=default_font):
+def parity_legend(ax=None, save_path=None, dpi=100, font=default_font):
     """
     Saves a figure to define the color coding in scatter parity plots. This
     figure can be used as a legend to describe color coding. This generates
