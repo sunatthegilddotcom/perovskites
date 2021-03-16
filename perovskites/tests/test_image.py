@@ -36,8 +36,8 @@ class test_image_processer(unittest.TestCase):
     def initial(self):
         tif_path = os.path.join(data_path, "sample_stack.tif")
         img_arr = process.read_image(tif_path)
-        test_read_image(img_arr)
-        test_mean_over_depth(img_arr)
+        test_read_image(self, img_arr)
+        test_mean_over_depth(self, img_arr)
 
     def test_read_image(self, img_arr):
         """
