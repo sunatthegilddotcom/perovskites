@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import unittest
 
 from perovskites.utils import image_loader as loader
@@ -31,19 +32,36 @@ class test_image_loader(unittest.TestCase):
           self.assertTrue(DATA[i].any() == data2[i].any())
 
 class test_image_processer(unittest.TestCase):
-    def test_read_image(self):
-        """
-        Tests read_image() function.
-        """
+
+    def initial(self):
         tif_path = os.path.join(data_path, "sample_stack.tif")
         img_arr = process.read_image(tif_path)
+        test_read_image(img_arr)
+        test_mean_over_depth(img_arr)
+
+    def test_read_image(self, img_arr):
+        """
+        Tests if read_image() function properly transforms tif file into
+        skimage processable numpy array.
+        """
         self.assertEqual(len(img_arr.shape), 3)
         self.assertEqual(img_arr.shape, (512, 512, 50))
 
-    def test_mean_over_depth(self):
+    def test_mean_over_depth(self, img_arr):
         """
-        Tests mean_over_depth() function.
+        Tests if mean_over_depth() accurately calculates array mean based
+        on the 3rd axis (time-depth)
         """
+        test1 = np.array([[[1, 1, 1],[2, 2, 2]],
+                        [[3, 3, 3],[4, 4, 4]]])
+        test2 = np.array([[1, 2], [3, 4]])
+        result1 = process.mean_over_depth(test1)
+        result2 = process.mean_over_depth(test2)
+        expected = np.array([[1., 2.], [3., 4.]])
+        size = len(process.mean_over_depth(img_arr)[0])
+        self.assertTrue(result1.any(), expected.any())
+        self.assertTrue(result2.any(), test2.any())
+        self.assertEqual(size, 512)
 
     def test_normalize(self):
         """
