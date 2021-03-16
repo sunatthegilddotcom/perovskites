@@ -5,7 +5,6 @@ from scipy.cluster.vq import kmeans2, whiten
 from sklearn.decomposition import PCA
 import image_loader as loader
 import pickle
-
 MODEL_LOG_FOLDER = "drive/Shareddrives/Perovskites_DIRECT/models"
 dataset = loader.PLDataLoader()
 
