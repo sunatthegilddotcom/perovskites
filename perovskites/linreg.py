@@ -59,6 +59,7 @@ def linear_regressor(X_train, y_train,
                      alpha_tuning_params={},
                      model_folder=None,
                      save_to_drive=False,
+                     overwrite_existing_model=False
                      ):
     """
     Fits a Linear Regression model to the specified training data. The test
@@ -123,6 +124,8 @@ def linear_regressor(X_train, y_train,
     save_to_drive : bool, optional
         Whether to save the model in shared drive. Works only when you have
         access to the shared drive. The default is False.
+    overwrite_existing_model : bool, optional
+        Whether to overwrite an existing model while saving.
 
     Raises
     ------
@@ -197,7 +200,7 @@ def linear_regressor(X_train, y_train,
             model_folder = os.path.join(saved_models_folder, model_folder)
 
         # Prompt new name input if another model exists with the same name
-        while os.path.exists(model_folder):
+        while os.path.exists(model_folder) and not overwrite_existing_model:
             print_str = "A saved model already exists at\n" + model_folder
             print_str += "\nPlease enter a new model name or path:\n>>"
             model_folder = input(print_str)
@@ -205,9 +208,6 @@ def linear_regressor(X_train, y_train,
                 model_folder = os.path.join(saved_models_folder, model_folder)
 
         os.makedirs(model_folder, exist_ok=True)
-        print("***************88")
-        print(model_folder)
-        print(mama)
         fit_pickle_path = os.path.join(model_folder, fit_pickle_name)
         with open(fit_pickle_path, 'wb') as file:
             pickle.dump(fit_results, file)
@@ -409,8 +409,8 @@ def alpha_tuning(X, y,
     print("------------------------------------------")
     print("Regularization hyperparameter tuning by cv")
     print("------------------------------------------")
-    print('alpha range        :  ({.2f}, {.2f})'.format(alpha_list.min(),
-                                                        alpha_list.max()))
+    print('alpha range        :  ({0:.2e}, {0:.2e})'.format(alpha_list.min(),
+                                                            alpha_list.max()))
     print('No. of folds       : ', k_fold_name)
     print('Maximum iterations : ', max_iter)
     print('Tolerance          :  {0:.2e}'.format(tol))
