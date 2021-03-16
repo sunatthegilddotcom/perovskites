@@ -38,6 +38,7 @@ class test_image_processer(unittest.TestCase):
         tif_path = os.path.join(data_path, "sample_stack.tif")
         img_arr = process.read_image(tif_path)
         self.assertEqual(len(img_arr.shape), 3)
+        self.assertEqual(img_arr.shape, (512, 512, 50))
 
     def test_mean_over_depth(self):
         """
