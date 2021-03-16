@@ -496,7 +496,7 @@ class CNNPredictor:
         ax.plot(np.arange(self.epochs), self.history_df['val_loss'], 'o-',
                 label='Validation loss', linewidth=1.2)
         ax.set_xlabel("epoch", **default_font)
-        ax.set_ylabel("Error", **default_font)
+        ax.set_ylabel(self.loss_metric, **default_font)
         ax.legend(fontsize=int(default_font['fontsize']*0.8))
 
     def parity_plot(self, ax, y_train, y_test, y_train_pred, y_test_pred,
@@ -552,7 +552,7 @@ class CNNPredictor:
         None.
 
         """
-        reg_vis.default_style_legend(ax=ax, save_path=save_path, dpi=dpi)
+        reg_vis.parity_legend(ax=ax, save_path=save_path, dpi=dpi)
 
 
 ##############################################################################

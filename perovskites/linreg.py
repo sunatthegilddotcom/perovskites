@@ -59,6 +59,7 @@ def linear_regressor(X_train, y_train,
                      alpha_tuning_params={},
                      model_folder=None,
                      save_to_drive=False,
+                     overwrite_existing_model=False
                      ):
     """
     Fits a Linear Regression model to the specified training data. The test
@@ -123,6 +124,8 @@ def linear_regressor(X_train, y_train,
     save_to_drive : bool, optional
         Whether to save the model in shared drive. Works only when you have
         access to the shared drive. The default is False.
+    overwrite_existing_model : bool, optional
+        Whether to overwrite an existing model while saving.
 
     Raises
     ------
@@ -148,10 +151,17 @@ def linear_regressor(X_train, y_train,
     reg = linear_model_selector(model_type)
 
     # Get the best regularization parameter by cross-validation
+    alpha_tuning_scores = None
+    best_alpha = None
+    alpha_tuning_scoring = None
     if model_type == 'Lasso' or model_type == 'Ridge':
-        best_alpha, alpha_tuning_scores = alpha_tuning(X_train, y_train,
-                                                       **alpha_tuning_params)
+        tuning_tuple = alpha_tuning(X_train, y_train,
+                                    **alpha_tuning_params)
+        best_alpha, alpha_tuning_scores, alpha_tuning_scoring = tuning_tuple
         reg.set_params(alpha=best_alpha)
+        print("------------------------------------------")
+        print("The best regularization alpha: ", best_alpha)
+        print("------------------------------------------\n")
 
     # Scale the data
     scaler = StandardScaler()
@@ -160,6 +170,8 @@ def linear_regressor(X_train, y_train,
 
     # Fit the model
     fit_results = {}
+
+    print('Fitting ', model_type, ' model on traning dataset...\n')
     reg.fit(X_train_fit, y_train)
     fit_results['model_type'] = model_type
     fit_results['X_train'] = X_train_fit
@@ -168,9 +180,11 @@ def linear_regressor(X_train, y_train,
     fit_results['y_test'] = y_test
     fit_results['feat_labels'] = feat_labels,
     fit_results['y_label'] = y_label
+    fit_results['alpha'] = best_alpha
     fit_results['alpha_tuning_params'] = alpha_tuning_params
     fit_results['alpha_tuning_scores'] = alpha_tuning_scores
-    fit_results['model'] = reg
+    fit_results['alpha_tuning_scoring'] = alpha_tuning_scoring
+    fit_results['fit'] = reg
     fit_results['scaler'] = scaler
 
     if model_folder is not None:
@@ -186,11 +200,11 @@ def linear_regressor(X_train, y_train,
             saved_models_folder = local_models_folder
 
         # If the model_folder is just the name of the model, not path
-        if not ('/' or '\\' in model_folder):
+        if not ('/' in model_folder or '\\' in model_folder):
             model_folder = os.path.join(saved_models_folder, model_folder)
 
         # Prompt new name input if another model exists with the same name
-        while os.path.exists(model_folder):
+        while os.path.exists(model_folder) and not overwrite_existing_model:
             print_str = "A saved model already exists at\n" + model_folder
             print_str += "\nPlease enter a new model name or path:\n>>"
             model_folder = input(print_str)
@@ -201,6 +215,7 @@ def linear_regressor(X_train, y_train,
         fit_pickle_path = os.path.join(model_folder, fit_pickle_name)
         with open(fit_pickle_path, 'wb') as file:
             pickle.dump(fit_results, file)
+        print("Model saved as dict in ", fit_pickle_path)
 
     return fit_results
 
@@ -277,11 +292,10 @@ def score(y_true, y_pred, scoring='mean_absolute_percentage_error',
             print("This scoring metric is not available. Returning the\n\
                   mean absolute percentage error instead...\n")
             denominator = np.maximum(1e-10, y_true)
-            error = np.sum(np.divide(np.abs(y_true-y_pred), denominator))
-            error /= len(y_true)
+            error = np.mean(np.divide(np.abs(y_true-y_pred), denominator))*100
         else:
             raise Exception("This scoring metric is not available.")
-            
+
     return error
 
 
@@ -337,6 +351,8 @@ def alpha_tuning(X, y,
     grid_search_results : dict
         The dictionary with two keys - 'alpha' and 'score' containing
         arrays of alpha values and correponding scores.
+    scoring : str
+        The scoring metric used for tuning
 
     """
     if model_type != 'Lasso' and model_type != 'Ridge':
@@ -344,11 +360,25 @@ def alpha_tuning(X, y,
                          is available only to the 'Lasso' and 'Ridge' model\n\
                              types.")
     reg_fit = linear_model_selector(model_type)
+    k_fold_name = str(k_fold)
     if k_fold == 'leave_one_out':
         k_fold = len(y)
 
     grand_alpha_list = []
     grand_score_list = []
+    alpha_list = np.array(alpha_list)
+    alpha_list_min = alpha_list.min()
+    alpha_list_max = alpha_list.max()
+
+    # Check if a valid scoring string is passed
+    if scoring not in ['r2', 'explained_variance', 'max_error']:
+        scoring = 'neg_'+scoring
+    if scoring not in sorted(metrics.SCORERS.keys()):
+        print(scoring, " is not available in sklearn.metrics. Using\n\
+              'neg_mean_absolute_error' instead.\n")
+        scoring = 'neg_mean_absolute_error'
+    if k_fold == 1:
+        scoring = scoring.partition('neg_')[-1]
 
     def scan_alpha_vals(reg_fit, alpha_list):
         # Get the best alpha over the entire X
@@ -371,13 +401,9 @@ def alpha_tuning(X, y,
         # other use the k_fold number of splits for tuning with
         # validatoin error
         else:
-            # The negative error score is maximized in GridSearch()
-            neutral_error_list = ['r2', 'max_error', 'explained_variance']
-            if scoring != neutral_error_list:
-                scoring_name = 'neg_' + scoring
             grid = GridSearchCV(estimator=reg_fit,
                                 param_grid={'alpha': alpha_list},
-                                scoring=scoring_name,
+                                scoring=scoring,
                                 cv=k_fold,
                                 verbose=1)
             grid.fit(X, y)
@@ -388,6 +414,17 @@ def alpha_tuning(X, y,
             grand_score_list.extend(list(mean_scores_list))
 
         return best_alpha
+
+    print("------------------------------------------")
+    print("Regularization hyperparameter tuning by cv")
+    print("------------------------------------------")
+    print('alpha range        :  ({0:.2e}, {0:.2e})'.format(alpha_list_min,
+                                                            alpha_list_max))
+    print('No. of folds       : ', k_fold_name)
+    print('Maximum iterations : ', max_iter)
+    print('Tolerance          :  {0:.2e}'.format(tol))
+    print('Model type         : ', model_type)
+    print('Scoring metric     : ', scoring, '\n')
 
     # Now, iterate over better resolutions of alpha list until the best alpha
     # is obtained.
@@ -407,5 +444,7 @@ def alpha_tuning(X, y,
     grand_alpha_list, unique_inds = np.unique(grand_alpha_list,
                                               return_index=True)
     grand_score_list = np.abs(np.array(grand_score_list)[unique_inds])
-
-    return best_alpha, dict(alpha=grand_alpha_list, score=grand_score_list)
+    return_tuple = (best_alpha,
+                    dict(alpha=grand_alpha_list, score=grand_score_list),
+                    scoring)
+    return return_tuple

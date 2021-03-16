@@ -18,7 +18,7 @@ NSUNS_RANGE = np.array([1, 32])
 REL_HUM_RANGE = np.array([0, 60])
 TEMP_RANGE = np.array([25, 85])
 MA_RANGE = np.array([0, 1])
-STYLE_VARIABLES = ['T', 'RH', 'soakSuns', 'MA', 'O2', 'N2']
+STYLE_VARIABLES = ['T', 'RH', 'soakSuns', 'MA', 'O2']
 
 # default font
 default_font = {'color': 'k',
@@ -115,7 +115,7 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
         count += 1
 
     handle1 = ax.scatter(np.max(grand_y), np.min(grand_y_pred),
-                         color=np.array(['w',]), s=1)
+                         color=np.array(['w', ]), s=1)
     handles = [handle1]
     labels = [description1]
 
@@ -143,7 +143,7 @@ def styled_parity_plot(ax, y_train, y_test, y_train_pred, y_test_pred,
     handles += [handle2]
     labels += [description2]
 
-    ax.legend(handles, labels, loc=1)
+    ax.legend(handles, labels, loc=1, fontsize=default_font['fontsize'])
 
 
 def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
@@ -168,7 +168,11 @@ def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
 
     Returns
     -------
-    Matplotlib scatter plot handle
+    handle : Matplotlib scatter plot handle
+    coeff_values : numpy.ndarray
+        The significant coefficient values
+    feat_labels : numpy.ndarray
+        The labels of significant features
 
     """
     coeff_values = np.array(coeff_values)
@@ -189,13 +193,13 @@ def coefficient_bar_chart(ax, feat_labels, coeff_values, tol=1e-4):
     ax.set_xticks(bar_x)
     ax.set_xticklabels(feat_labels, horizontalalignment='right',
                        fontsize=int(default_font['fontsize']*0.8))
-    ax.tick_params(axis='x', labelrotation=45)
+    ax.tick_params(axis='x', labelrotation=90)
     ax.bar(bar_x, np.abs(coeff_values), color=sign_colors)
 
     handle = ax.scatter(bar_x[-1],
                         np.max(np.abs(coeff_values)),
                         color='w', s=1)
-    return handle
+    return handle, coeff_values, feat_labels
 
 
 def train_validation_error(ax, history_csv, loss_metric):
@@ -228,7 +232,7 @@ def train_validation_error(ax, history_csv, loss_metric):
     ax.legend(fontsize=int(default_font['fontsize']*0.8))
 
 
-def default_style_legend(ax=None, save_path=None, dpi=100, font=default_font):
+def parity_legend(ax=None, save_path=None, dpi=100, font=default_font):
     """
     Saves a figure to define the color coding in scatter parity plots. This
     figure can be used as a legend to describe color coding. This generates
@@ -277,15 +281,16 @@ def default_style_legend(ax=None, save_path=None, dpi=100, font=default_font):
     for i in range(len(xlabels)):
         ax_edit.text(s=xlabels[i], x=x[i], y=y[-1]+0.35, **font, ha='center')
     for i in range(len(ylabels)):
-        ax_edit.text(s=ylabels[i], x=x[0]-1.45, y=y[::-1][i],
-                     **font, va='center')
+        ax_edit.text(s=ylabels[i], x=x[0]-1.02, y=y[::-1][i],
+                     **font, va='center', ha='center')
 
-    ax_edit.text(s="Relative Humidity", x=0.5*(x[0]+x[1]), y=y[-1]+1, **font)
-    ax_edit.text(s="Sun Intensity", y=y[1], x=x[0]-1.87,
+    ax_edit.text(s="Relative Humidity", x=0.5*(x[1]+x[2]), y=y[-1]+1,
+                 **font, ha='center')
+    ax_edit.text(s="Sun Intensity", y=y[1], x=x[0]-2.0,
                  rotation=90, **font, ha='center')
     ax_edit.arrow(x[0], y[-1]+0.80, 3, 0, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
-    ax_edit.arrow(x[0]-1.6, y[-1], 0, -3, head_width=0.1, head_length=0.1,
+    ax_edit.arrow(x[0]-1.76, y[-1], 0, -3, head_width=0.1, head_length=0.1,
                   fc='k', ec='k')
 
     # Defining MA% coding of style -------------------------------------------
@@ -446,7 +451,7 @@ def style_coding(T=None, RH=None, Nsuns=None, MA=None,
 
     """
 
-    cmap_edge = mpl.cm.get_cmap('jet')
+    cmap_edge = mpl.cm.get_cmap('jet').reversed()
     cmap_fill = mpl.cm.get_cmap('Greys')
     norm = mpl.colors.Normalize(vmin=0, vmax=1)
 
@@ -551,7 +556,7 @@ def style_coding(T=None, RH=None, Nsuns=None, MA=None,
     dict_list = []
     for i in range(len(T)):
         dict_list += [{
-                    'color': [c[i],],
+                    'color': [c[i], ],
                     's': s[i],
                     'linewidths': linewidth[i],
                     'edgecolors': edgecolor[i],

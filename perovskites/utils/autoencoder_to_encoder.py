@@ -9,13 +9,14 @@ import matplotlib.pyplot as plt
 MODEL_LOG_FOLDER = "drive/Shareddrives/Perovskites_DIRECT/models"
 dataset = loader.PLDataLoader()
 
-rc = {'figure.figsize':(10,5),
-      'axes.facecolor':'white',
-      'axes.grid' : True,
+rc = {'figure.figsize': (10, 5),
+      'axes.facecolor': 'white',
+      'axes.grid': True,
       'grid.color': '.8',
-      'font.family':'DejaVu Sans',
-      'font.size' : 15}
+      'font.family': 'DejaVu Sans',
+      'font.size': 15}
 plt.rcParams.update(rc)
+
 
 class autoencoder:
     def __init__(self, data=dataset, h5_name='Autoencoder.h5'):
@@ -90,17 +91,17 @@ class autoencoder:
         decoder.compile(optimizer=optimizer, loss='binary_crossentropy')
         decoder.summary()
         history = decoder.fit(train_X,
-                        train_X,
-                        epochs=epochs,
-                        batch_size=batch_size,
-                        validation_data=(valid_X, valid_X))
+                              train_X,
+                              epochs=epochs,
+                              batch_size=batch_size,
+                              validation_data=(valid_X, valid_X))
 
         encoder = tf.keras.Model(input_img, encoded)
         decoder.save_weights(file_path +
-                                 '/autoencoder_model/' +
-                                 self.h5_name)
+                             '/autoencoder_model/' +
+                             self.h5_name)
         encoder.save_weights(file_path + '/encoder_model/' + self.h5_name)
-        
+
         plt.plot(history.history['loss'], label='Train Loss')
         plt.plot(history.history['val_loss'], label='Validation Loss')
         plt.title('Loss as a function of Epochs')
@@ -290,7 +291,7 @@ class autoencoder:
                   '/autoencoder_output_noPCA.pickle', 'wb') as f:
             pickle.dump(autoencoder_output_noPCA, f)
         return autoencoder_output_noPCA
-    
+
     def build_autoencoder(self, epochs=100,
                           batch_size=150,
                           optimizer='adam'):
@@ -298,7 +299,7 @@ class autoencoder:
         This builds a blank encoded and decoded model that can
         subsequently be used to load a model with keras (that has
         already been trained.)
-        
+
         Parameters
         -------------------
         epochs: int
@@ -318,26 +319,37 @@ class autoencoder:
 
         '''
 
-        
         input_img = tf.keras.Input(shape=(32, 32, 1))
-        stride = (3,3) # Change stride
+        stride = (3, 3)  # Change stride
 
-        x = layers.Conv2D(32, stride, activation='relu', padding='same')(input_img)
+        x = layers.Conv2D(32,
+                          stride,
+                          activation='relu',
+                          padding='same')(input_img)
         x = layers.MaxPooling2D((2, 2), padding='same')(x)
         x = layers.Conv2D(16, stride, activation='relu', padding='same')(x)
         x = layers.MaxPooling2D((2, 2), padding='same')(x)
         x = layers.Conv2D(8, stride, activation='relu', padding='same')(x)
         x = layers.MaxPooling2D((2, 2), padding='same')(x)
-        encoded = layers.Conv2D(4, stride, activation='relu', padding='same')(x)
+        encoded = layers.Conv2D(4,
+                                stride,
+                                activation='relu',
+                                padding='same')(x)
 
-        x = layers.Conv2D(4, stride, activation='relu', padding='same')(encoded)
+        x = layers.Conv2D(4,
+                          stride,
+                          activation='relu',
+                          padding='same')(encoded)
         x = layers.UpSampling2D((2, 2))(x)
         x = layers.Conv2D(8, stride, activation='relu', padding='same')(x)
         x = layers.UpSampling2D((2, 2))(x)
         x = layers.Conv2D(16, stride, activation='relu', padding='same')(x)
         x = layers.UpSampling2D((2, 2))(x)
         x = layers.Conv2D(32, stride, activation='relu', padding='same')(x)
-        decoded = layers.Conv2D(1, (2, 2), activation='sigmoid', padding='same')(x)
+        decoded = layers.Conv2D(1,
+                                (2, 2),
+                                activation='sigmoid',
+                                padding='same')(x)
 
         autoencoder = tf.keras.Model(input_img, decoded)
         autoencoder.compile(optimizer=optimizer, loss='binary_crossentropy')
