@@ -1,8 +1,20 @@
-## Decoding spatial heterogeneities in Photoluminiscence images in Perovskite Thin films
+## Decoding spatial heterogeneities in Photoluminiscence images in Perovskite Thin films : <font color='purple'>**TEAM PEROVSKEET**</font>
 [![Coverage Status](https://coveralls.io/repos/github/afarley9/perovskites/badge.svg?branch=main)](https://coveralls.io/github/afarley9/perovskites?branch=main)
 [![Build Status](https://travis-ci.com/afarley9/perovskites.svg?branch=main)](https://travis-ci.com/afarley9/perovskites)
+
+
 ### Overview:
+
+**Perovskite solar cells (PSCs)** have seen an increase in photo-conversion efficiencies from 17% to 25.2% in just a span of seven years. Although perovskite solar cells show promising efficiencies, their poor stabilities have restricted their commercial deployment. PSCs degrade quickly in the presence of oxygen, moisture, thermal stress and illumination, which makes predicting their payback lifetime a challenge for commercial manufacturers. This motivated the Hillhouse Group at the University of Washington, to develop a machine learning model which can predict the ***'lifetime'*** of a perovskite thin film using few early time series measurements and the environmental conditions of degradation. A well-trained model like this would allow the users to   
+<img src="papers/figure_perovskites.png" alt="perovskites" width="500"/>
+
+
+Currently, in the Hillhouse Group at University of Washington, 
+![Routes](papers/figure1.png)
+
+
 Develop a python package that can extract hidden information from spatial heterogeneities observed in PL images of perovskite thin films and quantify it to generate features for use in lifetime prediction models. Currently, PL image processing is primarily implemented in biological fields; we seek to restructure this technology for use in the material characterization of perovskite photovoltaics. This will provide a more robust picture of features which lead to degradation than current state of the art perovskite characterization. 
+![Routes](papers/figure2.png)
 
 ### Potential Users:
 * Other academic researchers in the thin-film PV community
