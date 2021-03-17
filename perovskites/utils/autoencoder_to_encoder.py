@@ -19,6 +19,11 @@ plt.rcParams.update(rc)
 
 
 class autoencoder:
+    """
+    This class offers users a variety of useful tools which
+    can be implemented to train and maniupulate an autoencoder
+    ad the resulting output.
+    """
     def __init__(self, data=dataset, h5_name='Autoencoder.h5'):
         self.h5_name = h5_name
         self.data = data
@@ -36,8 +41,6 @@ class autoencoder:
         -------------------
         optimizer:
             What optimizer fuction the autoencodre uses to train the model
-        data: Three dimensional numpy array
-            Array containing all 32x32 images that are to be fed into the model
         epochs: int
             Number of epochs that you desire your function to run
         batch_size: int
@@ -116,12 +119,12 @@ class autoencoder:
                              optimizer='adam'):
         """
         Given a data set this function will build an autoencoded
-        CNN and return the encoded layer.
+        CNN and return the encoded layer. As we want to create
+        encoded layers for every image, the autoencoder is trained
+        on the entire dataset.
 
         Parameters
         -------------------
-        data: Three dimensional numpy array
-            Array containing all 32x32 images that are to be fed into the model
         epochs: int
             Number of epochs that you desire your function to run
         batch_size: int
@@ -131,8 +134,11 @@ class autoencoder:
 
         Returns
         -------------------
-        encoded_layer
+        encoded_layer:
             A 64x1 array with the values from the autoencoder
+        dataset_labels:
+            Returns a list of the labels associated with the input 
+            dataframe in the same numeric order as the encoded array
         """
         pickle_output = self.data.sample(frac=1.0, return_dfs=True)
         full_dataset = pickle_output[0]/pickle_output[0].max()
@@ -151,6 +157,10 @@ class autoencoder:
                           centroids=10,
                           iter=20):
         """
+        A simple implementation of scikit.learns kmeans function
+        which allows the user to group the data into any number of
+        groups based off the encoded matrix.
+        
         Parameters
         -------------------
         encoded_array: two-dimensional dimensional numpy array
@@ -186,13 +196,16 @@ class autoencoder:
                                 PCA_input,
                                 PCA_dims):
         '''
+        An implementation of scikit learns PCA class which will build 
+        principal component arrays of a given dimension out of a given
+        encoded layer.
         Parameters
         -------------------
         PCA_input:
             Array where the rows are individual data points and the columns
             are the values from the encoded matrix
         PCA_dims:
-            Number of demensions for the PCA function to reduce your
+            Number of dimensions for the PCA function to reduce your
             encoded layer output to
 
         Returns
@@ -215,10 +228,13 @@ class autoencoder:
                                       run_PCA=True,
                                       PCA_dims=10):
         '''
+        This is the core auto encoder/postprocessing function which can be
+        used to cluster input data and return clusters and encoded arrays.
+        It also allows for the user to perform PCA and return clusters
+        based on the reduced matrices (as well as returning the reduced
+        matrices).
         Parameters
         -------------------
-        data: Three dimensional numpy array
-            Array containing all 32x32 images that are to be fed into the model
         epochs: int
             Number of epochs that you desire your function to run
         batch_size: int
@@ -233,14 +249,18 @@ class autoencoder:
         run_PCA:
             Wheter or not we should run PCA on our components
         PCA_dims:
-            Number of demensions for the PCA function to reduce your encoded
+            Number of dimensions for the PCA function to reduce your encoded
             layer output to
 
         Returns
         -------------------
-        (list_of_classifications, )
+        list of indexes: 
+            A list of the alphanumeric data labels fed into our
+            core autoencoder function. Each of which is returned
+            at the same numeric index as their corresponding
+            encoded_array, list_of_classifications, etc.
         encoded_array:
-            Returns an array of flattened encoded layers from the auto encoder
+            An array of flattened encoded layers from the auto encoder
             of size len(data)x64
         list_of_classifications:
             Ordered list of the classifications for each datapoint
@@ -251,7 +271,7 @@ class autoencoder:
             if "run_PCA" == True, of size len(data)x"PCA_dims"
         encoded_array_PCA:
             Reduced array of dimension specified by "PCA_dims",
-            will only be returned if "run_PCA" == True
+            **will only be returned if "run_PCA" == True**
         '''
 
         autoencoder_output = self.core_autoencoder_fxn(epochs,
@@ -298,7 +318,7 @@ class autoencoder:
         '''
         This builds a blank encoded and decoded model that can
         subsequently be used to load a model with keras (that has
-        already been trained.)
+        already been trained).
 
         Parameters
         -------------------
