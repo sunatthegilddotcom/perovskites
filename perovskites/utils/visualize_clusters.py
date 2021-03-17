@@ -14,6 +14,29 @@ import random
 
 
 def assign_IDs(dataset, ID_list):
+    """
+    Takes the list of centroids and makes a
+    dictionary with the centroids as keys and
+    the values are lists of all the input images 
+    which are assigned to the centroids.
+    
+    Parameters
+    -------------------
+    Dataset: Class
+        Dataset class from which we can sample or
+        draw a test-train split. See the utils
+        folder, image_loader.py file for more details
+    ID_list: [2-D array]
+        Two-dimensional list where the first column is
+        associated with the datas position in the matrix
+        and the second column is the assigned centroid
+    Output:
+    -------------------
+    ID_dict:
+        Returns a dictionary with the centroids as keys and
+        the values are lists of all the input images 
+        which are assigned to the centroids.
+    """
     data = dataset.sample(frac=1.0)[0]
     ID_dict = {}
     for ii in range(len(ID_list)):
