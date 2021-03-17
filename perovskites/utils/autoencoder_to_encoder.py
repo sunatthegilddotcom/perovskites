@@ -41,8 +41,6 @@ class autoencoder:
         -------------------
         optimizer:
             What optimizer fuction the autoencodre uses to train the model
-        data: Three dimensional numpy array
-            Array containing all 32x32 images that are to be fed into the model
         epochs: int
             Number of epochs that you desire your function to run
         batch_size: int
@@ -127,8 +125,6 @@ class autoencoder:
 
         Parameters
         -------------------
-        data: Three dimensional numpy array
-            Array containing all 32x32 images that are to be fed into the model
         epochs: int
             Number of epochs that you desire your function to run
         batch_size: int
@@ -239,8 +235,6 @@ class autoencoder:
         matrices).
         Parameters
         -------------------
-        data: Three dimensional numpy array
-            Array containing all 32x32 images that are to be fed into the model
         epochs: int
             Number of epochs that you desire your function to run
         batch_size: int
