@@ -437,47 +437,6 @@ class CNNPredictor:
         """
         return self.model.predict(X, verbose=0,)
 
-    def full_analysis(self, X_train, y_train, X_test, y_test,
-                      epochs=1, batch_size=None,
-                      validation_split=0.2,
-                      save_model_to_drive=False,):
-        """
-        Perofrms fitting, saves the model and also makes visualizations, and
-        stores them in their respective folders.
-
-        Parameters
-        ----------
-        X_train : TYPE
-            DESCRIPTION.
-        y_train : TYPE
-            DESCRIPTION.
-        X_test : TYPE
-            DESCRIPTION.
-        y_test : TYPE
-            DESCRIPTION.
-        epochs : TYPE, optional
-            DESCRIPTION. The default is 1.
-        batch_size : TYPE, optional
-            DESCRIPTION. The default is None.
-        validation_split : TYPE, optional
-            DESCRIPTION. The default is 0.2.
-        save_model_to_drive : TYPE, optional
-            DESCRIPTION. The default is False.
-
-        Returns
-        -------
-        None.
-
-        """
-        print("1. Fit the model over training data")
-        self.fit(X_train, y_train, epochs=epochs, batch_size=batch_size,
-                 validation_split=validation_split)
-
-        print("\n2. Save the model")
-        self.save_model(save_to_drive=save_model_to_drive)
-
-        print("\n3. Make the plots for visualizations")
-
     def fit_plot(self, ax,):
         """
         Plots the error vs epoch plot for the current model.
