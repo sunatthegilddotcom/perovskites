@@ -38,8 +38,10 @@ The perovskites package consists of various modules containing classes and wrapp
       |___image_processing.py
       |___autoencoder_to_encoder.py
       |___regression_visualization.py
-      |___visualiza clusters.py
+      |___visualize_clusters.py
 </code></pre>
+
+<img src="papers/figure_files.png" alt="files" width="550"/>
 
 * Check out the [`examples`](examples/) directory for example notebooks which show how these modules can be put to use and also to visualize the spatial PL intensity data of perovskite thin films.
 * Check out this [notebook](examples/presentation_notebook.ipynb) where all the modules have been put to use for demonstration.
