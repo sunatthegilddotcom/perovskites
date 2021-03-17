@@ -520,7 +520,8 @@ class CNNPredictor:
 ##############################################################################
 
 def _print_fit_table(train_size, epochs, batch_size, feed_img_shape):
-
+	"""A utility function just to print a neat table showing
+	the arguements"""
     num_size_str_len = max(len(str(epochs)),
                            len(str(train_size)),
                            len(str(batch_size)),
